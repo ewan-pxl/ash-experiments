@@ -1,12 +1,12 @@
 <script setup>
-import { pageHref, pagePath, folderCrumbs, projectHref } from '../pages.js'
+import { pageHref, pagePath, folderCrumbs, projectHref, tagHue } from '../pages.js'
 
 const props = defineProps({
   page: { type: Object, required: true },
   showFolder: { type: Boolean, default: true },
   showProject: { type: Boolean, default: true },
 })
-const emit = defineEmits(['openFolder', 'openProject'])
+const emit = defineEmits(['openFolder', 'openProject', 'openTag'])
 
 // Plain left-clicks navigate in-app; modified clicks open a new tab normally.
 function modified(e) {
@@ -37,6 +37,18 @@ function navProject(e) {
       <span class="id">#{{ String(page.id).padStart(3, '0') }}</span>
     </div>
     <p class="desc">{{ page.description }}</p>
+    <p v-if="page.tags.length" class="card-tags">
+      <button
+        v-for="t in page.tags"
+        :key="t"
+        type="button"
+        class="tag"
+        :style="{ '--tag-h': tagHue(t) }"
+        @click="emit('openTag', t)"
+      >
+        {{ t }}
+      </button>
+    </p>
     <div class="card-bottom">
       <code class="slug">{{ pagePath(page) }}</code>
       <span class="card-meta">

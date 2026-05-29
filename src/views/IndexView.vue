@@ -10,6 +10,7 @@ import {
   projectList,
   pagesInProject,
   projectHref,
+  tagHue,
 } from '../pages.js'
 
 // Decode the URL into {tab, folder, project}.
@@ -19,6 +20,9 @@ import {
 //   /home?project=<name>   → that project's pages
 function parseLocation() {
   const params = new URLSearchParams(window.location.search)
+  if (params.has('tags')) {
+    return { tab: 'tags', folder: '', project: '' }
+  }
   if (params.has('project')) {
     return { tab: 'projects', folder: '', project: (params.get('project') || '').trim() }
   }
@@ -50,6 +54,12 @@ const query = ref('')
 
 const searching = computed(() => query.value.trim() !== '')
 
+// A `tag:<name>` query filters by that exact tag across ALL pages (ignores folder/project scope).
+const tagQuery = computed(() => {
+  const m = query.value.trim().match(/^tag:(.+)$/i)
+  return m ? m[1].trim().toLowerCase() : null
+})
+
 // Flat list/search is scoped to the current folder subtree or project.
 const scope = computed(() => {
   if (tab.value === 'projects' && project.value) return pagesInProject(project.value)
@@ -60,6 +70,10 @@ const scope = computed(() => {
   return pages
 })
 const filtered = computed(() => {
+  if (tagQuery.value !== null) {
+    const tg = tagQuery.value
+    return pages.filter((p) => p.tags.includes(tg)) // exact tag, global
+  }
   const q = query.value.trim().toLowerCase()
   if (!q) return scope.value
   return scope.value.filter(
@@ -68,10 +82,31 @@ const filtered = computed(() => {
       p.description.toLowerCase().includes(q) ||
       p.slug.toLowerCase().includes(q) ||
       p.folder.toLowerCase().includes(q) ||
-      p.project.toLowerCase().includes(q),
+      p.project.toLowerCase().includes(q) ||
+      p.tags.some((t) => t.includes(q)),
   )
 })
 const scopeLabel = computed(() => project.value || folder.value || '')
+
+// Tag frequencies within the current scope (root = everything; folder = its subtree; project = its pages).
+const scopeTags = computed(() => {
+  const counts = new Map()
+  for (const p of scope.value) for (const t of p.tags) counts.set(t, (counts.get(t) || 0) + 1)
+  return [...counts.entries()]
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .map(([tag, count]) => ({ tag, count }))
+})
+const topTags = computed(() => scopeTags.value.slice(0, 5))
+const hasMoreTags = computed(() => scopeTags.value.length > 5)
+
+// Every tag across all pages (for the Tags tab).
+const allTags = computed(() => {
+  const counts = new Map()
+  for (const p of pages) for (const t of p.tags) counts.set(t, (counts.get(t) || 0) + 1)
+  return [...counts.entries()]
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .map(([tag, count]) => ({ tag, count }))
+})
 
 const subs = computed(() => subfolders(folder.value))
 const here = computed(() => pagesInFolder(folder.value))
@@ -85,16 +120,19 @@ const listLocked = computed(
 
 function setTitle() {
   document.title =
-    tab.value === 'projects'
-      ? project.value || 'Projects'
-      : tab.value === 'folder' && folder.value
-        ? folder.value
-        : 'Index'
+    tab.value === 'tags'
+      ? 'Tags'
+      : tab.value === 'projects'
+        ? project.value || 'Projects'
+        : tab.value === 'folder' && folder.value
+          ? folder.value
+          : 'Index'
 }
 
 // --- client-side nav (page links stay real full-page loads) ---
 const stateFor = (t, f, p) => ({ idx: true, tab: t, folder: f, project: p })
 const urlFor = (t, f, p) => {
+  if (t === 'tags') return '/home?tags'
   if (t === 'projects') return projectHref(p)
   if (t === 'folder' && f) return folderHref(f)
   return '/home'
@@ -112,6 +150,12 @@ function clickNav(e, t, f = '', p = '') {
   if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return
   e.preventDefault()
   go(t, f, p)
+}
+
+// Clicking a tag puts `tag:<name>` in the search — an exact filter across all pages.
+function openTag(tag) {
+  query.value = `tag:${tag}`
+  window.scrollTo(0, 0)
 }
 
 function onPop(e) {
@@ -149,14 +193,46 @@ onBeforeUnmount(() => window.removeEventListener('popstate', onPop))
       <span class="count">{{ pages.length }} {{ pages.length === 1 ? 'page' : 'pages' }}</span>
     </header>
 
-    <input
-      v-if="pages.length"
-      v-model="query"
-      type="search"
-      class="search"
-      :placeholder="scopeLabel ? `Search ${scopeLabel}…` : 'Search…'"
-      autofocus
-    />
+    <div v-if="pages.length" class="search-wrap">
+      <input
+        v-model="query"
+        type="search"
+        class="search"
+        :placeholder="scopeLabel ? `Search ${scopeLabel}…` : 'Search…'"
+        autofocus
+      />
+      <button
+        v-if="query"
+        type="button"
+        class="search-clear"
+        aria-label="Clear search"
+        @click="query = ''"
+      >
+        ×
+      </button>
+    </div>
+
+    <div v-if="pages.length && !searching && tab !== 'tags' && topTags.length" class="tag-row">
+      <button
+        v-for="t in topTags"
+        :key="t.tag"
+        type="button"
+        class="tag"
+        :style="{ '--tag-h': tagHue(t.tag) }"
+        @click="openTag(t.tag)"
+      >
+        {{ t.tag }}
+      </button>
+      <button
+        v-if="hasMoreTags"
+        type="button"
+        class="tag tag-more"
+        title="All tags"
+        @click="go('tags')"
+      >
+        …
+      </button>
+    </div>
 
     <div v-if="pages.length && !searching" class="tabs">
       <button type="button" class="tab" :class="{ active: tab === 'folder' }" @click="go('folder')">
@@ -180,13 +256,17 @@ onBeforeUnmount(() => window.removeEventListener('popstate', onPop))
       >
         List
       </button>
+      <button type="button" class="tab" :class="{ active: tab === 'tags' }" @click="go('tags')">
+        Tags
+      </button>
     </div>
 
     <p v-if="!pages.length" class="empty">Nothing here yet.</p>
 
     <!-- FLAT LIST (List tab, or any active search) -->
     <template v-else-if="searching || tab === 'list'">
-      <p v-if="searching && scopeLabel" class="section-label">in {{ scopeLabel }}</p>
+      <p v-if="tagQuery !== null" class="section-label">tagged {{ tagQuery }}</p>
+      <p v-else-if="searching && scopeLabel" class="section-label">in {{ scopeLabel }}</p>
       <p v-if="!filtered.length" class="empty">No matches.</p>
       <ul v-else class="grid">
         <PageCard
@@ -195,6 +275,7 @@ onBeforeUnmount(() => window.removeEventListener('popstate', onPop))
           :page="p"
           @open-folder="(f) => go('folder', f)"
           @open-project="(name) => go('projects', '', name)"
+          @open-tag="openTag"
         />
       </ul>
     </template>
@@ -221,7 +302,10 @@ onBeforeUnmount(() => window.removeEventListener('popstate', onPop))
                 <span class="material-symbols-outlined folder-icon" aria-hidden="true">folder</span>
                 <span class="folder-name">{{ f.name }}</span>
               </span>
-              <span class="folder-count">{{ f.count }} {{ f.count === 1 ? 'item' : 'items' }}</span>
+              <span class="folder-count"
+                >{{ f.count }} {{ f.count === 1 ? 'item' : 'items'
+                }}<template v-if="f.updated"> · {{ f.updated }}</template></span
+              >
             </a>
           </li>
         </ul>
@@ -237,6 +321,7 @@ onBeforeUnmount(() => window.removeEventListener('popstate', onPop))
             :show-folder="false"
             @open-folder="(f) => go('folder', f)"
             @open-project="(name) => go('projects', '', name)"
+            @open-tag="openTag"
           />
         </ul>
       </template>
@@ -245,7 +330,7 @@ onBeforeUnmount(() => window.removeEventListener('popstate', onPop))
     </template>
 
     <!-- PROJECTS BROWSER -->
-    <template v-else>
+    <template v-else-if="tab === 'projects'">
       <!-- a specific project: just its pages -->
       <template v-if="project">
         <nav class="breadcrumb">
@@ -261,6 +346,7 @@ onBeforeUnmount(() => window.removeEventListener('popstate', onPop))
             :page="p"
             :show-project="false"
             @open-folder="(f) => go('folder', f)"
+            @open-tag="openTag"
           />
         </ul>
       </template>
@@ -279,11 +365,31 @@ onBeforeUnmount(() => window.removeEventListener('popstate', onPop))
                 <span class="material-symbols-outlined folder-icon" aria-hidden="true">category</span>
                 <span class="folder-name">{{ pr.name }}</span>
               </span>
-              <span class="folder-count">{{ pr.count }} {{ pr.count === 1 ? 'page' : 'pages' }}</span>
+              <span class="folder-count"
+                >{{ pr.count }} {{ pr.count === 1 ? 'page' : 'pages'
+                }}<template v-if="pr.updated"> · {{ pr.updated }}</template></span
+              >
             </a>
           </li>
         </ul>
       </template>
+    </template>
+
+    <!-- TAGS: every tag, click to filter -->
+    <template v-else-if="tab === 'tags'">
+      <p v-if="!allTags.length" class="empty">No tags yet.</p>
+      <div v-else class="tag-cloud">
+        <button
+          v-for="t in allTags"
+          :key="t.tag"
+          type="button"
+          class="tag"
+          :style="{ '--tag-h': tagHue(t.tag) }"
+          @click="openTag(t.tag)"
+        >
+          {{ t.tag }} <span class="tag-count">{{ t.count }}</span>
+        </button>
+      </div>
     </template>
   </main>
 </template>

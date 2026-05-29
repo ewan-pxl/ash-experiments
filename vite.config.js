@@ -2,7 +2,7 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { readdirSync, readFileSync, existsSync, statSync } from 'node:fs'
+import { readdirSync, readFileSync, existsSync } from 'node:fs'
 
 const root = dirname(fileURLToPath(import.meta.url))
 const pagesDir = resolve(root, 'pages')
@@ -79,37 +79,11 @@ function flattenPages() {
   }
 }
 
-// Latest file mtime per page folder, injected at build/serve time so the index
-// can sort folders by most recently modified.
-function pageMtimes() {
-  const map = {}
-  if (existsSync(pagesDir)) {
-    for (const dir of readdirSync(pagesDir, { withFileTypes: true })) {
-      if (!dir.isDirectory()) continue
-      const full = resolve(pagesDir, dir.name)
-      let latest = 0
-      try {
-        for (const f of readdirSync(full)) {
-          const st = statSync(resolve(full, f))
-          if (st.isFile()) latest = Math.max(latest, st.mtimeMs)
-        }
-      } catch {
-        // ignore unreadable dirs
-      }
-      map[dir.name] = latest
-    }
-  }
-  return map
-}
-
 export default defineConfig({
   plugins: [vue(), flattenPages()],
   resolve: {
     // Pages in a project import shared assets/code via @projects/<name>/...
     alias: { '@projects': resolve(root, 'projects') },
-  },
-  define: {
-    __PAGE_MTIMES__: JSON.stringify(pageMtimes()),
   },
   build: {
     rollupOptions: { input: pageEntries() },

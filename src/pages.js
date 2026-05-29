@@ -2,10 +2,6 @@
 // from their meta.json at build time; folder is virtual (URL-only).
 const modules = import.meta.glob('/pages/*/meta.json', { eager: true })
 
-// Per-page latest file mtime, injected by vite.config `define` (0 if unavailable).
-// eslint-disable-next-line no-undef
-const mtimes = typeof __PAGE_MTIMES__ !== 'undefined' ? __PAGE_MTIMES__ : {}
-
 export function normalizeFolder(f) {
   return typeof f === 'string'
     ? f
@@ -28,8 +24,11 @@ export const pages = Object.entries(modules)
       description: meta.description ?? '',
       folder: normalizeFolder(meta.folder),
       project: typeof meta.project === 'string' ? meta.project.trim() : '',
+      tags: Array.isArray(meta.tags)
+        ? meta.tags.map((t) => String(t).trim().toLowerCase()).filter(Boolean)
+        : [],
       created: meta.created ?? '',
-      mtime: mtimes[slug] ?? 0,
+      updated: (typeof meta.updated === 'string' && meta.updated) || meta.created || '',
     }
   })
   .sort((a, b) => b.id - a.id)
@@ -70,10 +69,10 @@ export function subfolders(folder) {
       const inside = pages.filter(
         (p) => p.folder === full || p.folder.startsWith(full + '/'),
       )
-      const mtime = inside.reduce((m, p) => Math.max(m, p.mtime || 0), 0)
-      return { name, full, count: inside.length, mtime, href: folderHref(full) }
+      const updated = inside.reduce((m, p) => (p.updated > m ? p.updated : m), '')
+      return { name, full, count: inside.length, updated, href: folderHref(full) }
     })
-    .sort((a, b) => b.mtime - a.mtime) // most recently modified first
+    .sort((a, b) => b.updated.localeCompare(a.updated) || a.name.localeCompare(b.name))
 }
 
 // Pages located directly in `folder` (not in its subfolders).
@@ -89,10 +88,17 @@ export function projectList() {
   return [...names]
     .map((name) => {
       const inside = pages.filter((p) => p.project === name)
-      const mtime = inside.reduce((m, p) => Math.max(m, p.mtime || 0), 0)
-      return { name, count: inside.length, mtime, href: projectHref(name) }
+      const updated = inside.reduce((m, p) => (p.updated > m ? p.updated : m), '')
+      return { name, count: inside.length, updated, href: projectHref(name) }
     })
-    .sort((a, b) => b.mtime - a.mtime)
+    .sort((a, b) => b.updated.localeCompare(a.updated) || a.name.localeCompare(b.name))
 }
 
 export const pagesInProject = (name) => pages.filter((p) => p.project === name)
+
+// Deterministic hue (0–359) per tag, so each tag keeps a stable, distinct colour.
+export function tagHue(tag) {
+  let h = 0
+  for (let i = 0; i < tag.length; i++) h = (h * 31 + tag.charCodeAt(i)) >>> 0
+  return h % 360
+}

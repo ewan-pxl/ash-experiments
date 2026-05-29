@@ -4,5 +4,7 @@
   "description": "A 7-slide Pixel Theory new-business deck outlining the approach for Zebra.",
   "folder": "Zebra",
   "project": "pixel-theory",
-  "created": "2026-05-29"
+  "tags": ["deck", "pitch", "client"],
+  "created": "2026-05-29",
+  "updated": "2026-05-29"
 }

@@ -3,5 +3,7 @@
   "name": "I ♥ Pixel Theory Postcard",
   "description": "A flippable pixel-art postcard that says I love pixel theory.",
   "folder": "test",
-  "created": "2026-05-29"
+  "tags": ["test"],
+  "created": "2026-05-29",
+  "updated": "2026-05-29"
 }

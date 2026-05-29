@@ -133,7 +133,9 @@ createApp(App).mount('#app')
   "description": "One sentence describing it — shown on the index.",
   "folder": "",
   "project": "",
-  "created": "YYYY-MM-DD"
+  "tags": [],
+  "created": "YYYY-MM-DD",
+  "updated": "YYYY-MM-DD"
 }
 ```
 - `id`: the integer form of `NNN` (no leading zeros, e.g. `7` for `-007`).
@@ -141,7 +143,13 @@ createApp(App).mount('#app')
   Empty string = root. Sets the live path: `/<folder>/<slug>-NNN/`.
 - `project`: optional kebab-case project name (e.g. `"pixel-theory"`). Empty = no project. Orthogonal
   to `folder` — see **Projects**.
-- `created`: today's date, `YYYY-MM-DD`.
+- `tags`: optional array of short lowercase labels (e.g. `["game", "canvas", "wip"]`) for
+  cross-cutting search/filter. **Guess a few relevant ones yourself** — don't make him supply them —
+  but **confirm them with him before the page first goes live** (see Preview & ship). Shown as chips
+  on the index, searchable, and clicking one filters to that tag.
+- `created`: today's date, `YYYY-MM-DD` (set once, when you make the page).
+- `updated`: today's date as well — and **bump it to today whenever you change the page**. Folders
+  and projects display and sort by the most recent `updated` among their items.
 
 ---
 
@@ -154,6 +162,9 @@ createApp(App).mount('#app')
 - **Don't edit the shell** (`src/`, the root `index.html`, `vite.config.js`) unless you're explicitly
   asked to change the framework itself.
 - **Don't renumber.** ids are forever.
+- **Keep `updated` current** — set `created` and `updated` to today when you make a page, and bump
+  `updated` to today whenever you edit an existing one. It drives the last-touched date on folders
+  and projects.
 - **Don't create a homepage or link to `/home`.** The 404 and hidden index are intentional.
 - **Keep `<meta name="robots" content="noindex" />` in every page's `index.html`.** Nothing here should be indexed by search engines.
 
@@ -238,8 +249,11 @@ project is — e.g. *"Is this part of a project? Projects let related pages shar
 ### In the index
 
 `/home` has a **Projects** tab (lists every project; click one to see its pages), and every page card
-shows a small **project badge**. Both update automatically from the `project` fields — never edit a
-list file.
+shows a small **project badge** plus its **tags** as chips. Clicking a tag (or typing `tag:<name>`)
+filters to that exact tag across **every** folder and project; plain text search stays scoped to the
+current view. Under the search bar it shows the 5 most-used tags for the current view (a `…` opens a
+**Tags** tab listing them all). Everything updates automatically from `meta.json` — never edit a list
+file.
 
 ---
 
@@ -260,6 +274,9 @@ list file.
 - First time: `npm install`. Then `npm run dev`.
 - The index is at <http://localhost:5173/home> (it links to each page automatically).
 - A page in dev is served at `http://localhost:5173/pages/<slug>-<NNN>/index.html`.
+- **Before the first push,** show him the `tags` you guessed for the page and let him tweak them — it
+  guesses, he confirms. (Folder and project were already chosen at creation; tags are the one bit of
+  `meta.json` worth a quick confirm at ship time.)
 - **Go live:** commit and push. Cloudflare Pages builds (`npm run build` → `dist`) and deploys.
   The page is then live at:
 
