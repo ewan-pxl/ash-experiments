@@ -6,6 +6,7 @@
   --text: #e7eaee;
   --muted: #8b94a3;
   --accent: #5b9dff;
+  --project: #c08cff;
 }
 
 * {
@@ -208,6 +209,9 @@ a {
   font-size: 0.8rem;
   font-variant-numeric: tabular-nums;
 }
+.project-card .folder-icon {
+  color: var(--project);
+}
 .card {
   position: relative;
   display: block;
@@ -273,6 +277,27 @@ a {
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
+}
+.card-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.project-badge {
+  position: relative;
+  z-index: 1;
+  color: var(--project);
+  border: 1px solid color-mix(in srgb, var(--project) 45%, transparent);
+  border-radius: 999px;
+  padding: 0.08rem 0.5rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.project-badge:hover {
+  background: color-mix(in srgb, var(--project) 16%, transparent);
+  border-color: var(--project);
 }
 .slug {
   color: var(--accent);

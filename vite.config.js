@@ -104,6 +104,10 @@ function pageMtimes() {
 
 export default defineConfig({
   plugins: [vue(), flattenPages()],
+  resolve: {
+    // Pages in a project import shared assets/code via @projects/<name>/...
+    alias: { '@projects': resolve(root, 'projects') },
+  },
   define: {
     __PAGE_MTIMES__: JSON.stringify(pageMtimes()),
   },

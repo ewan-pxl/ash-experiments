@@ -1,0 +1,22 @@
+/* Pixel Theory brand tokens + fonts — shared across the project's pages.
+   The @import loads the brand typography (Funnel Display / Geist Mono / Inter)
+   so every page in the project renders it. @import must stay above :root. */
+@import url('https://fonts.googleapis.com/css2?family=Funnel+Display:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --ink: #2c0f44;
+  --ink-2: #3a1559;
+  --yellow: #fec200;
+  --lilac: #cfaeed;
+  --violet: #9224e9;
+  --cream: #faf6ee;
+  --card: #ffffff;
+  --line-l: rgba(44, 15, 68, 0.09);
+  --mut-l: rgba(44, 15, 68, 0.52);
+  --body-l: rgba(44, 15, 68, 0.72);
+  --mut-d: rgba(207, 174, 237, 0.74);
+  --line-d: rgba(255, 255, 255, 0.13);
+  --mono: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --display: 'Funnel Display', 'Helvetica Neue', Arial, sans-serif;
+  --body: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}

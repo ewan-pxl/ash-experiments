@@ -27,6 +27,7 @@ export const pages = Object.entries(modules)
       name: meta.name ?? slug,
       description: meta.description ?? '',
       folder: normalizeFolder(meta.folder),
+      project: typeof meta.project === 'string' ? meta.project.trim() : '',
       created: meta.created ?? '',
       mtime: mtimes[slug] ?? 0,
     }
@@ -36,9 +37,10 @@ export const pages = Object.entries(modules)
 // Canonical public path of a page, e.g. /games/arcade/snake-007.
 export const pagePath = (p) => '/' + [p.folder, p.slug].filter(Boolean).join('/')
 
-// Live href: dev serves pages flat at /pages/<slug>/; the build lifts to pagePath().
+// Live href: dev serves pages flat at /pages/<slug>/ (trailing slash required —
+// without it Vite falls back to the shell); the build lifts to pagePath().
 export const pageHref = (p) =>
-  import.meta.env.DEV ? `/pages/${p.slug}/index.html` : pagePath(p) + '/'
+  import.meta.env.DEV ? `/pages/${p.slug}/` : pagePath(p) + '/'
 
 // Index link to a folder view (root list when folder is empty).
 export const folderHref = (folder) => '/list' + (folder ? '/' + folder : '')
@@ -76,3 +78,21 @@ export function subfolders(folder) {
 
 // Pages located directly in `folder` (not in its subfolders).
 export const pagesInFolder = (folder) => pages.filter((p) => p.folder === folder)
+
+// ---- projects (sharing groups; orthogonal to folders) ----
+export const projectHref = (name) => '/list?project=' + (name ? encodeURIComponent(name) : '')
+
+// All projects, most recently modified first.
+export function projectList() {
+  const names = new Set()
+  for (const p of pages) if (p.project) names.add(p.project)
+  return [...names]
+    .map((name) => {
+      const inside = pages.filter((p) => p.project === name)
+      const mtime = inside.reduce((m, p) => Math.max(m, p.mtime || 0), 0)
+      return { name, count: inside.length, mtime, href: projectHref(name) }
+    })
+    .sort((a, b) => b.mtime - a.mtime)
+}
+
+export const pagesInProject = (name) => pages.filter((p) => p.project === name)

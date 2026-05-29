@@ -15,7 +15,8 @@ show a 404. There is one hidden index at `/list` that lists every page.
 - Vue 3 + Vite. Deployed to Cloudflare Pages (push to deploy).
 - Every page lives in its own folder `pages/<slug>-<NNN>/` and is a **completely separate build**:
   its own `index.html`, its own JS bundle, its own Vue app, its own CSS. **Pages cannot affect each
-  other.** This isolation is the entire point of the project — preserve it.
+  other.** This isolation is the default and the entire point — preserve it. (The one deliberate
+  exception is **Projects**, where related pages opt into sharing assets/code — see below.)
 - The build lifts each page to a clean URL: `pages/welcome-001/` → live at `/welcome-001/`.
 - **Folders are virtual.** The `pages/` directory stays flat (one folder per page). A page's
   `meta.json` `folder` field sets where it lives in the URL — e.g. `folder: "games/arcade"` makes
@@ -61,27 +62,24 @@ src/                  ← the shell (/list + 404). Leave it alone.
 
 1. List `pages/` → find the highest `-NNN` → that page's next id is `NNN + 1` (padded to 3 digits).
 2. Choose a slug. The on-disk folder is always `pages/<slug>-<NNN>/` (flat — folders are virtual).
-3. **Ask him which folder it belongs in.** First read the existing folders (the `folder` values
-   across `pages/*/meta.json`) and compare them to what he's making. Then ask with a multiple-choice
-   prompt that **always** offers these options:
-   - **Guessed folder** — the existing folder that best fits. If nothing fits, propose a sensible
-     **new** folder name here instead.
-   - **Root** — no folder (lives at the top level).
-   - **Other** — a free-text field for a custom path. (The choice prompt always includes a free-text
-     option, so you don't need to add it manually — but make sure the question is phrased so a custom
-     path makes sense.)
+3. **Ask which project it belongs to** (project first — see **Projects** below for the prompt and
+   for what a project actually is). A project is what lets the page share assets with related pages.
+4. **Ask which folder it belongs in.** Read the existing folders (the `folder` values across
+   `pages/*/meta.json`), then ask with a multiple-choice prompt that **always** offers:
+   - **Guessed folder** — the best existing fit (the project from step 3 can inform this); or a
+     sensible **new** folder name if nothing fits.
+   - **Root** — no folder (top level).
+   - **Other** — a free-text custom path (the prompt always includes a free-text option).
 
-   **Interpret his answer — don't transcribe it.** A free-text reply may ramble ("eh just chuck it
-   in with the zebra client stuff") — work out the folder he *means* and normalize it to a clean
-   kebab-case path (here: `clients/zebra`), reusing an existing folder if it matches. Never paste his
-   raw wording in as the `folder` value. If his intent is genuinely unclear, ask once more rather
-   than guessing wildly. Use the resolved folder as the page's `folder` in `meta.json` (`""` for root).
-4. Create the four files below in `pages/<slug>-<NNN>/`.
-5. Build the actual thing inside `App.vue`. Add more `.vue` / `.js` / `.css` files **in the same
-   folder** if you need to — just keep everything inside this one folder.
-6. Fill in `meta.json` (including the `folder` from step 3). The `/list` page picks it up
-   automatically — **never edit any list file.**
-7. Preview, then ship (see bottom).
+   **Interpret, don't transcribe** either answer — a rambled reply ("eh just chuck it in with the
+   zebra client stuff") means *work out what he intends*, normalize to a clean kebab-case path, and
+   reuse an existing folder/project if it matches. Never paste raw wording in. Ask again if unclear.
+5. Create the four files below in `pages/<slug>-<NNN>/`.
+6. Build the actual thing inside `App.vue` (add more files in the same folder as needed). If it's in
+   a project, put assets/fonts in the project and import them via `@projects/...` (see **Projects**).
+7. Fill in `meta.json` (including `folder` and `project`). The `/list` page picks it up automatically
+   — **never edit any list file.**
+8. Preview, then ship (see bottom).
 
 ### Templates
 
@@ -134,12 +132,15 @@ createApp(App).mount('#app')
   "name": "Human Readable Name",
   "description": "One sentence describing it — shown on the index.",
   "folder": "",
+  "project": "",
   "created": "YYYY-MM-DD"
 }
 ```
 - `id`: the integer form of `NNN` (no leading zeros, e.g. `7` for `-007`).
 - `folder`: optional URL folder, slash-separated kebab-case (e.g. `"games"` or `"tools/text"`).
   Empty string = root. Sets the live path: `/<folder>/<slug>-NNN/`.
+- `project`: optional kebab-case project name (e.g. `"pixel-theory"`). Empty = no project. Orthogonal
+  to `folder` — see **Projects**.
 - `created`: today's date, `YYYY-MM-DD`.
 
 ---
@@ -155,6 +156,90 @@ createApp(App).mount('#app')
 - **Don't renumber.** ids are forever.
 - **Don't create a homepage or link to `/list`.** The 404 and hidden index are intentional.
 - **Keep `<meta name="robots" content="noindex" />` in every page's `index.html`.** Nothing here should be indexed by search engines.
+
+---
+
+## Projects
+
+**A project is a set of related pages that share resources** — fonts, images, colours, the occasional
+component — because they belong together (same client, brand, campaign, or series). It gives those
+pages one shared home at `projects/<name>/`, so an asset is defined once and reused instead of every
+page carrying its own copy. **Pages with no project stay fully isolated;** a project is the deliberate
+"these go together and share stuff" grouping. Isolation is still the default — a project is a bounded,
+opt-in exception to it.
+
+A page joins a project via `"project": "<name>"` in its `meta.json`. **Project is orthogonal to
+folder** — `folder` is where the page lives in the URL; `project` is who it shares with. A page can
+have both, one, or neither.
+
+### Layout & importing
+
+```
+projects/<name>/
+  assets/     images etc.        (shared)
+  fonts/      font files + fonts.css
+  shared/     code — only when hoisted (see below)
+```
+
+That layout is a starting point, not a cage — **keep `projects/<name>/` organised however makes
+sense for that project** as it grows: subfolder the assets, split `brand.css` into tokens + fonts,
+add a `components/` dir, group by page set, whatever's tidiest. Just keep the import paths consistent
+so pages don't break, and tidy up (merge dupes, drop unused assets) as you go.
+
+Pages import shared things through the `@projects` alias:
+
+```js
+import logo from '@projects/<name>/assets/logo.svg'      // bundled, hashed, deduped
+import '@projects/<name>/brand.css'                       // shared tokens / @font-face
+import sprite from '@projects/<name>/logo.svg?raw'        // inline an SVG (then v-html it)
+```
+
+Vite content-hashes and **dedupes** shared imports across pages, so one asset is emitted once and
+cached across the whole project.
+
+### Assets & fonts — always shared
+
+For any page **in a project**, its assets and fonts live in `projects/<name>/`, not the page folder —
+even if only one page uses them (single asset home, ready for reuse). **Check what's already in the
+project and reuse it** before adding anything new. (Project-less pages keep their assets local, as
+normal.)
+
+### Code — local by default, shared only when it clearly pays off
+
+Keep code **local to the page** by default. When you add a page to a project, read its sibling pages
+(same `project`) and look for *substantial, stable* duplication — a component or util both genuinely
+need. A little duplication beats premature coupling, so be conservative.
+
+If you do find something worth sharing, **propose before moving**: tell him what you'd hoist to
+`projects/<name>/shared/` and **which pages it would touch**, and only do it once he's okay with it.
+Then update every page that uses it and re-verify.
+
+### Safety (sharing couples pages — handle with care)
+
+- After hoisting or editing shared code, update **all** pages in the project that use it, keep changes
+  **additive** where possible, run the build, and preview each affected page.
+- If a change would break a sibling, **don't force-share** — keep it local or version it.
+- **Rule exception:** within a project you *may* edit sibling pages' folders to refactor shared code.
+  This is the only time the "never touch another page's folder" rule is relaxed — keep it scoped to
+  project-mates.
+
+### The project prompt (recipe step 3)
+
+Ask which project the new page belongs to. Lead the question with a one-line reminder of what a
+project is — e.g. *"Is this part of a project? Projects let related pages share fonts/images/assets
+(same client or series)."* — then offer, building the options from context:
+
+- **Add to `<existing>`** — when it genuinely fits an existing project (read the projects first).
+- **New project `<name>`** — when it sounds like the start of something reusable; propose a kebab name.
+- **No project** — standalone, fully isolated (the default for one-offs).
+- **Other** — free-text (always present). Interpret intent, don't transcribe; reuse an existing
+  project if the wording matches one.
+
+### In the index
+
+`/list` has a **Projects** tab (lists every project; click one to see its pages), and every page card
+shows a small **project badge**. Both update automatically from the `project` fields — never edit a
+list file.
 
 ---
 

@@ -1,18 +1,27 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import PageCard from '../components/PageCard.vue'
 import {
   pages,
-  pageHref,
-  pagePath,
-  folderCrumbs,
   subfolders,
   pagesInFolder,
+  folderCrumbs,
   folderHref,
+  projectList,
+  pagesInProject,
+  projectHref,
 } from '../pages.js'
 
-// Decode the current URL into {tab, folder}. /list defaults to the folder
-// browser at root; /list/<folder> opens that folder.
+// Decode the URL into {tab, folder, project}.
+//   /list                  → folder browser at root (default)
+//   /list/<folder>         → folder browser at that folder
+//   /list?project          → projects browser (root = list of projects)
+//   /list?project=<name>   → that project's pages
 function parseLocation() {
+  const params = new URLSearchParams(window.location.search)
+  if (params.has('project')) {
+    return { tab: 'projects', folder: '', project: (params.get('project') || '').trim() }
+  }
   const path = window.location.pathname.replace(/\/+$/, '')
   if (path.startsWith('/list/')) {
     const folder = path
@@ -28,25 +37,27 @@ function parseLocation() {
       .map((s) => s.trim())
       .filter(Boolean)
       .join('/')
-    return { tab: 'folder', folder }
+    return { tab: 'folder', folder, project: '' }
   }
-  return { tab: 'folder', folder: '' }
+  return { tab: 'folder', folder: '', project: '' }
 }
 
 const init = parseLocation()
 const tab = ref(init.tab)
 const folder = ref(init.folder)
+const project = ref(init.project)
 const query = ref('')
 
 const searching = computed(() => query.value.trim() !== '')
-// Search always overrides to the flat list and hides the tabs.
-const mode = computed(() => (searching.value ? 'list' : tab.value))
 
-// Search/list is scoped to the current folder (its whole subtree), not root.
+// Flat list/search is scoped to the current folder subtree or project.
 const scope = computed(() => {
-  const f = folder.value
-  if (!f) return pages
-  return pages.filter((p) => p.folder === f || p.folder.startsWith(f + '/'))
+  if (tab.value === 'projects' && project.value) return pagesInProject(project.value)
+  if (tab.value === 'folder' && folder.value) {
+    const f = folder.value
+    return pages.filter((p) => p.folder === f || p.folder.startsWith(f + '/'))
+  }
+  return pages
 })
 const filtered = computed(() => {
   const q = query.value.trim().toLowerCase()
@@ -56,36 +67,51 @@ const filtered = computed(() => {
       p.name.toLowerCase().includes(q) ||
       p.description.toLowerCase().includes(q) ||
       p.slug.toLowerCase().includes(q) ||
-      p.folder.toLowerCase().includes(q),
+      p.folder.toLowerCase().includes(q) ||
+      p.project.toLowerCase().includes(q),
   )
 })
+const scopeLabel = computed(() => project.value || folder.value || '')
 
 const subs = computed(() => subfolders(folder.value))
 const here = computed(() => pagesInFolder(folder.value))
 const crumbs = computed(() => folderCrumbs(folder.value))
+const allProjects = computed(() => projectList())
+const projectPages = computed(() => pagesInProject(project.value))
+
+const listLocked = computed(
+  () => (tab.value === 'folder' && !!folder.value) || (tab.value === 'projects' && !!project.value),
+)
 
 function setTitle() {
-  document.title = mode.value === 'folder' ? folder.value || 'Folders' : 'Index'
+  document.title =
+    tab.value === 'projects'
+      ? project.value || 'Projects'
+      : tab.value === 'folder' && folder.value
+        ? folder.value
+        : 'Index'
 }
 
 // --- client-side nav (page links stay real full-page loads) ---
-const stateFor = (t, f) => ({ idx: true, tab: t, folder: f })
-const urlFor = (t, f) => (t === 'folder' && f ? folderHref(f) : '/list')
-
-function go(t, f) {
+const stateFor = (t, f, p) => ({ idx: true, tab: t, folder: f, project: p })
+const urlFor = (t, f, p) => {
+  if (t === 'projects') return projectHref(p)
+  if (t === 'folder' && f) return folderHref(f)
+  return '/list'
+}
+function go(t, f = '', p = '') {
   tab.value = t
   folder.value = f
+  project.value = p
   query.value = ''
-  history.pushState(stateFor(t, f), '', urlFor(t, f))
+  history.pushState(stateFor(t, f, p), '', urlFor(t, f, p))
   setTitle()
   window.scrollTo(0, 0)
 }
-
-// Intercept plain left-clicks; let ctrl/cmd/middle-click open a new tab normally.
-function nav(e, t, f) {
+function clickNav(e, t, f = '', p = '') {
   if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return
   e.preventDefault()
-  go(t, f)
+  go(t, f, p)
 }
 
 function onPop(e) {
@@ -93,17 +119,23 @@ function onPop(e) {
   if (s && s.idx) {
     tab.value = s.tab
     folder.value = s.folder
+    project.value = s.project || ''
   } else {
     const p = parseLocation()
     tab.value = p.tab
     folder.value = p.folder
+    project.value = p.project
   }
   query.value = ''
   setTitle()
 }
 
 onMounted(() => {
-  history.replaceState(stateFor(tab.value, folder.value), '', urlFor(tab.value, folder.value))
+  history.replaceState(
+    stateFor(tab.value, folder.value, project.value),
+    '',
+    urlFor(tab.value, folder.value, project.value),
+  )
   setTitle()
   window.addEventListener('popstate', onPop)
 })
@@ -122,26 +154,29 @@ onBeforeUnmount(() => window.removeEventListener('popstate', onPop))
       v-model="query"
       type="search"
       class="search"
-      :placeholder="folder ? `Search ${folder}…` : 'Search…'"
+      :placeholder="scopeLabel ? `Search ${scopeLabel}…` : 'Search…'"
       autofocus
     />
 
     <div v-if="pages.length && !searching" class="tabs">
-      <button
-        type="button"
-        class="tab"
-        :class="{ active: mode === 'folder' }"
-        @click="go('folder', '')"
-      >
+      <button type="button" class="tab" :class="{ active: tab === 'folder' }" @click="go('folder')">
         Folder
       </button>
       <button
         type="button"
         class="tab"
-        :class="{ active: mode === 'list' }"
-        :disabled="!!folder"
-        title="Go to root to switch to list view"
-        @click="go('list', '')"
+        :class="{ active: tab === 'projects' }"
+        @click="go('projects')"
+      >
+        Projects
+      </button>
+      <button
+        type="button"
+        class="tab"
+        :class="{ active: tab === 'list' }"
+        :disabled="listLocked"
+        title="Go to a root to switch to list view"
+        @click="go('list')"
       >
         List
       </button>
@@ -149,38 +184,28 @@ onBeforeUnmount(() => window.removeEventListener('popstate', onPop))
 
     <p v-if="!pages.length" class="empty">Nothing here yet.</p>
 
-    <!-- LIST MODE (and any active search) -->
-    <template v-else-if="mode === 'list'">
-      <p v-if="searching && folder" class="section-label">in {{ folder }}</p>
+    <!-- FLAT LIST (List tab, or any active search) -->
+    <template v-else-if="searching || tab === 'list'">
+      <p v-if="searching && scopeLabel" class="section-label">in {{ scopeLabel }}</p>
       <p v-if="!filtered.length" class="empty">No matches.</p>
       <ul v-else class="grid">
-        <li v-for="p in filtered" :key="p.slug" class="card">
-          <p v-if="p.folder" class="crumb">
-            <span v-for="(c, i) in folderCrumbs(p.folder)" :key="c.href">
-              <a :href="c.href" @click="nav($event, 'folder', c.folder)">{{ c.label }}</a
-              ><span v-if="i < p.folder.split('/').length - 1" class="sep"> / </span>
-            </span>
-          </p>
-          <div class="card-top">
-            <a :href="pageHref(p)" class="name name-link">{{ p.name }}</a>
-            <span class="id">#{{ String(p.id).padStart(3, '0') }}</span>
-          </div>
-          <p class="desc">{{ p.description }}</p>
-          <div class="card-bottom">
-            <code class="slug">{{ pagePath(p) }}</code>
-            <span v-if="p.created" class="date">{{ p.created }}</span>
-          </div>
-        </li>
+        <PageCard
+          v-for="p in filtered"
+          :key="p.slug"
+          :page="p"
+          @open-folder="(f) => go('folder', f)"
+          @open-project="(name) => go('projects', '', name)"
+        />
       </ul>
     </template>
 
-    <!-- FOLDER MODE (root is just a folder) -->
-    <template v-else>
+    <!-- FOLDER BROWSER -->
+    <template v-else-if="tab === 'folder'">
       <nav v-if="folder" class="breadcrumb">
-        <a href="/list" @click="nav($event, 'folder', '')">root</a>
+        <a href="/list" @click="clickNav($event, 'folder', '')">root</a>
         <template v-for="(c, i) in crumbs" :key="c.href">
           <span class="sep">/</span>
-          <a v-if="i < crumbs.length - 1" :href="c.href" @click="nav($event, 'folder', c.folder)">{{
+          <a v-if="i < crumbs.length - 1" :href="c.href" @click="clickNav($event, 'folder', c.folder)">{{
             c.label
           }}</a>
           <span v-else class="current">{{ c.label }}</span>
@@ -191,7 +216,7 @@ onBeforeUnmount(() => window.removeEventListener('popstate', onPop))
         <p class="section-label">Folders</p>
         <ul class="grid folder-grid">
           <li v-for="f in subs" :key="f.full">
-            <a :href="f.href" class="card folder-card" @click="nav($event, 'folder', f.full)">
+            <a :href="f.href" class="card folder-card" @click="clickNav($event, 'folder', f.full)">
               <span class="folder-head">
                 <span class="material-symbols-outlined folder-icon" aria-hidden="true">folder</span>
                 <span class="folder-name">{{ f.name }}</span>
@@ -205,23 +230,60 @@ onBeforeUnmount(() => window.removeEventListener('popstate', onPop))
       <template v-if="here.length">
         <p class="section-label">Pages</p>
         <ul class="grid">
-          <li v-for="p in here" :key="p.slug">
-            <a :href="pageHref(p)" class="card">
-              <div class="card-top">
-                <span class="name">{{ p.name }}</span>
-                <span class="id">#{{ String(p.id).padStart(3, '0') }}</span>
-              </div>
-              <p class="desc">{{ p.description }}</p>
-              <div class="card-bottom">
-                <code class="slug">{{ pagePath(p) }}</code>
-                <span v-if="p.created" class="date">{{ p.created }}</span>
-              </div>
-            </a>
-          </li>
+          <PageCard
+            v-for="p in here"
+            :key="p.slug"
+            :page="p"
+            :show-folder="false"
+            @open-folder="(f) => go('folder', f)"
+            @open-project="(name) => go('projects', '', name)"
+          />
         </ul>
       </template>
 
       <p v-if="!subs.length && !here.length" class="empty">Nothing in this folder.</p>
+    </template>
+
+    <!-- PROJECTS BROWSER -->
+    <template v-else>
+      <!-- a specific project: just its pages -->
+      <template v-if="project">
+        <nav class="breadcrumb">
+          <a href="/list?project=" @click="clickNav($event, 'projects', '', '')">projects</a>
+          <span class="sep">/</span>
+          <span class="current">{{ project }}</span>
+        </nav>
+        <p v-if="!projectPages.length" class="empty">Nothing in this project.</p>
+        <ul v-else class="grid">
+          <PageCard
+            v-for="p in projectPages"
+            :key="p.slug"
+            :page="p"
+            :show-project="false"
+            @open-folder="(f) => go('folder', f)"
+          />
+        </ul>
+      </template>
+
+      <!-- projects root: list every project -->
+      <template v-else>
+        <p v-if="!allProjects.length" class="empty">No projects yet.</p>
+        <ul v-else class="grid folder-grid">
+          <li v-for="pr in allProjects" :key="pr.name">
+            <a
+              :href="pr.href"
+              class="card folder-card project-card"
+              @click="clickNav($event, 'projects', '', pr.name)"
+            >
+              <span class="folder-head">
+                <span class="material-symbols-outlined folder-icon" aria-hidden="true">category</span>
+                <span class="folder-name">{{ pr.name }}</span>
+              </span>
+              <span class="folder-count">{{ pr.count }} {{ pr.count === 1 ? 'page' : 'pages' }}</span>
+            </a>
+          </li>
+        </ul>
+      </template>
     </template>
   </main>
 </template>
