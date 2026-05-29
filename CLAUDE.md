@@ -143,4 +143,11 @@ createApp(App).mount('#app')
 - The index is at <http://localhost:5173/list> (it links to each page automatically).
 - A page in dev is served at `http://localhost:5173/pages/<slug>-<NNN>/index.html`.
 - **Go live:** commit and push. Cloudflare Pages builds (`npm run build` → `dist`) and deploys.
-  The page is then live at `https://<your-domain>/<slug>-<NNN>/`.
+  The page is then live at:
+
+  ```
+  https://pages.thepixeltheory.app/<slug>-<NNN>/
+  ```
+
+  **After you push, give them that exact link** (with the real slug and number filled in) so they
+  can open the deployed page.

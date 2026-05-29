@@ -30,5 +30,9 @@ Connect this repo to a Cloudflare Pages project with:
 Push to your default branch and it deploys. Pages Claude adds show up automatically — no config
 changes needed.
 
+Live at **<https://pages.thepixeltheory.app/>** — a page lives at
+`https://pages.thepixeltheory.app/<slug>-<NNN>/`, and the hidden index is at
+<https://pages.thepixeltheory.app/list>.
+
 > Note: `/list` is hidden only by not being linked. It is not private — anyone who knows the URL
 > can see it. Don't put anything sensitive here.
