@@ -1,15 +1,15 @@
 <script setup>
-import ListView from './views/ListView.vue'
+import IndexView from './views/IndexView.vue'
 import NotFound from './views/NotFound.vue'
 
-// The shell only renders two things: the hidden index at /list, and a 404 for
-// everything else. There is no homepage. Pages themselves are separate
-// documents, so no in-app navigation happens here.
+// The shell renders the hidden index for /list and /list/<folder>, and a 404 for
+// everything else. There is no homepage. Pages themselves are separate documents.
 const path = window.location.pathname.replace(/\/+$/, '')
-const isList = path === '/list'
+const isIndex = path === '/list' || path.startsWith('/list/')
+if (!isIndex) document.title = '404'
 </script>
 
 <template>
-  <ListView v-if="isList" />
+  <IndexView v-if="isIndex" />
   <NotFound v-else />
 </template>

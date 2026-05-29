@@ -2,10 +2,42 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { readdirSync, existsSync } from 'node:fs'
+import { readdirSync, readFileSync, existsSync, statSync } from 'node:fs'
 
 const root = dirname(fileURLToPath(import.meta.url))
 const pagesDir = resolve(root, 'pages')
+
+// A page's URL folder comes from its meta.json `folder` field (virtual — the
+// pages/ dir stays flat). "Games/Arcade" or "/games/arcade/" → "games/arcade".
+function normalizeFolder(f) {
+  if (typeof f !== 'string') return ''
+  return f
+    .split('/')
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .join('/')
+}
+
+// Map of page slug (folder name in /pages) → its virtual URL folder.
+function pageFolders() {
+  const map = {}
+  if (existsSync(pagesDir)) {
+    for (const dir of readdirSync(pagesDir, { withFileTypes: true })) {
+      if (!dir.isDirectory()) continue
+      const metaPath = resolve(pagesDir, dir.name, 'meta.json')
+      let folder = ''
+      if (existsSync(metaPath)) {
+        try {
+          folder = normalizeFolder(JSON.parse(readFileSync(metaPath, 'utf8')).folder)
+        } catch {
+          folder = ''
+        }
+      }
+      map[dir.name] = folder
+    }
+  }
+  return map
+}
 
 // Every folder in /pages becomes its own isolated build entry — its own HTML,
 // its own JS bundle, its own Vue app. Pages cannot affect each other.
@@ -21,17 +53,23 @@ function pageEntries() {
   return entries
 }
 
-// In the built output, lift each page from /pages/<slug>/ up to /<slug>/ so the
-// public URL is a clean /<slug>/ instead of /pages/<slug>/.
+// In the built output, lift each page from /pages/<slug>/ to its public path
+// /<folder>/<slug>/ (folder from meta.json; root if empty). Assets are absolute
+// (/assets/*) so moving the HTML to any depth keeps every reference valid.
 function flattenPages() {
+  const folders = pageFolders()
   return {
     name: 'flatten-pages',
     enforce: 'post',
     generateBundle(_options, bundle) {
       for (const key of Object.keys(bundle)) {
         const chunk = bundle[key]
-        if (chunk.fileName?.startsWith('pages/') && chunk.fileName.endsWith('.html')) {
-          const lifted = chunk.fileName.slice('pages/'.length)
+        const fn = chunk.fileName
+        if (fn?.startsWith('pages/') && fn.endsWith('.html')) {
+          const remainder = fn.slice('pages/'.length) // <slug>/index.html
+          const slug = remainder.split('/')[0]
+          const folder = folders[slug] || ''
+          const lifted = folder ? `${folder}/${remainder}` : remainder
           chunk.fileName = lifted
           delete bundle[key]
           bundle[lifted] = chunk
@@ -41,8 +79,34 @@ function flattenPages() {
   }
 }
 
+// Latest file mtime per page folder, injected at build/serve time so the index
+// can sort folders by most recently modified.
+function pageMtimes() {
+  const map = {}
+  if (existsSync(pagesDir)) {
+    for (const dir of readdirSync(pagesDir, { withFileTypes: true })) {
+      if (!dir.isDirectory()) continue
+      const full = resolve(pagesDir, dir.name)
+      let latest = 0
+      try {
+        for (const f of readdirSync(full)) {
+          const st = statSync(resolve(full, f))
+          if (st.isFile()) latest = Math.max(latest, st.mtimeMs)
+        }
+      } catch {
+        // ignore unreadable dirs
+      }
+      map[dir.name] = latest
+    }
+  }
+  return map
+}
+
 export default defineConfig({
   plugins: [vue(), flattenPages()],
+  define: {
+    __PAGE_MTIMES__: JSON.stringify(pageMtimes()),
+  },
   build: {
     rollupOptions: { input: pageEntries() },
   },

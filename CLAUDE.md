@@ -17,6 +17,10 @@ show a 404. There is one hidden index at `/list` that lists every page.
   its own `index.html`, its own JS bundle, its own Vue app, its own CSS. **Pages cannot affect each
   other.** This isolation is the entire point of the project — preserve it.
 - The build lifts each page to a clean URL: `pages/welcome-001/` → live at `/welcome-001/`.
+- **Folders are virtual.** The `pages/` directory stays flat (one folder per page). A page's
+  `meta.json` `folder` field sets where it lives in the URL — e.g. `folder: "games/arcade"` makes
+  `pages/snake-007/` go live at `/games/arcade/snake-007/`. Empty `folder` = root. To move a page,
+  just change its `folder`; never move or rename the on-disk folder.
 - `/list` and the 404 live in `src/` (the "shell"). You normally never touch the shell.
 
 ```
@@ -39,19 +43,45 @@ src/                  ← the shell (/list + 404). Leave it alone.
   trailing number, add one. If `pages/` is empty, start at `001`.
 - **Never reuse, renumber, or shift existing ids** — even if a page was deleted. Old numbers stay
   retired so live URLs never break. (So the next id can be higher than the page count.)
+- **Numbering is global.** The next id is the highest across *all* pages, regardless of folder —
+  folders do **not** get their own counters.
 - Pick a short, descriptive kebab-case slug from what they asked for.
+- **Folders** go in `meta.json`, not the on-disk path. They become the URL prefix
+  `/<folder>/<slug>-NNN/`. Empty `""` = root. Always let him choose the folder (see the recipe)
+  rather than deciding silently.
+- **Folders can nest to any depth** — separate levels with `/`, kebab-case each (e.g. `"games"`,
+  `"games/arcade"`, `"clients/zebra/decks"`). The `/list` browser drills through each level, and a
+  guessed or custom folder can be nested too.
+- **Don't use `list` as a top-level folder** — `/list` and `/list/<folder>` are the hidden index's
+  own URLs, so a page there would collide with it.
 
 ---
 
 ## Recipe: create a new page
 
 1. List `pages/` → find the highest `-NNN` → that page's next id is `NNN + 1` (padded to 3 digits).
-2. Choose a slug. Final folder name = `pages/<slug>-<NNN>/`.
-3. Create the four files below in that folder.
-4. Build the actual thing inside `App.vue`. Add more `.vue` / `.js` / `.css` files **in the same
+2. Choose a slug. The on-disk folder is always `pages/<slug>-<NNN>/` (flat — folders are virtual).
+3. **Ask him which folder it belongs in.** First read the existing folders (the `folder` values
+   across `pages/*/meta.json`) and compare them to what he's making. Then ask with a multiple-choice
+   prompt that **always** offers these options:
+   - **Guessed folder** — the existing folder that best fits. If nothing fits, propose a sensible
+     **new** folder name here instead.
+   - **Root** — no folder (lives at the top level).
+   - **Other** — a free-text field for a custom path. (The choice prompt always includes a free-text
+     option, so you don't need to add it manually — but make sure the question is phrased so a custom
+     path makes sense.)
+
+   **Interpret his answer — don't transcribe it.** A free-text reply may ramble ("eh just chuck it
+   in with the zebra client stuff") — work out the folder he *means* and normalize it to a clean
+   kebab-case path (here: `clients/zebra`), reusing an existing folder if it matches. Never paste his
+   raw wording in as the `folder` value. If his intent is genuinely unclear, ask once more rather
+   than guessing wildly. Use the resolved folder as the page's `folder` in `meta.json` (`""` for root).
+4. Create the four files below in `pages/<slug>-<NNN>/`.
+5. Build the actual thing inside `App.vue`. Add more `.vue` / `.js` / `.css` files **in the same
    folder** if you need to — just keep everything inside this one folder.
-5. Fill in `meta.json`. The `/list` page picks it up automatically — **never edit any list file.**
-6. Preview, then ship (see bottom).
+6. Fill in `meta.json` (including the `folder` from step 3). The `/list` page picks it up
+   automatically — **never edit any list file.**
+7. Preview, then ship (see bottom).
 
 ### Templates
 
@@ -103,10 +133,13 @@ createApp(App).mount('#app')
   "id": 2,
   "name": "Human Readable Name",
   "description": "One sentence describing it — shown on the index.",
+  "folder": "",
   "created": "YYYY-MM-DD"
 }
 ```
 - `id`: the integer form of `NNN` (no leading zeros, e.g. `7` for `-007`).
+- `folder`: optional URL folder, slash-separated kebab-case (e.g. `"games"` or `"tools/text"`).
+  Empty string = root. Sets the live path: `/<folder>/<slug>-NNN/`.
 - `created`: today's date, `YYYY-MM-DD`.
 
 ---
@@ -146,8 +179,8 @@ createApp(App).mount('#app')
   The page is then live at:
 
   ```
-  https://pages.thepixeltheory.app/<slug>-<NNN>/
+  https://pages.thepixeltheory.app/<folder>/<slug>-<NNN>/
   ```
 
-  **After you push, give them that exact link** (with the real slug and number filled in) so they
-  can open the deployed page.
+  (drop the `<folder>/` part if the page is at the root). **After you push, give them that exact
+  link** (with the real folder, slug, and number filled in) so they can open the deployed page.
