@@ -1,0 +1,3 @@
+# Cloudflare Pages serves real files first (each /<slug>/ page, /assets/*),
+# then falls back to the shell for everything else (/list and unknown paths).
+/* /index.html 200
