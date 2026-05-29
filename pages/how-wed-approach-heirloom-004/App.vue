@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, onUnmounted } from 'vue'
-import ptLogo from '@projects/pixel-theory/logo.svg?raw'
-import '@projects/pixel-theory/brand.css'
+import ptLogo from '@projects/PXL decks/logo.svg?raw'
+import '@projects/PXL decks/brand.css'
 
 let onKeydown = null
 
@@ -280,7 +280,7 @@ onUnmounted(() => {
 </template>
 
 <style>
-/* Brand tokens (palette + fonts) come from @projects/pixel-theory/brand.css */
+/* Brand tokens (palette + fonts) come from @projects/PXL decks/brand.css */
 
 * {
   box-sizing: border-box;
