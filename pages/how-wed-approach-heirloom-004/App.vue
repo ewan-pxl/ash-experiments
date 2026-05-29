@@ -70,9 +70,8 @@ onUnmounted(() => {
     </div>
 
     <div class="body">
-      <div class="eyebrow"><span class="y">Prepared for</span><br /><span class="l">// Heirloom Coffee Roasters · May 2026</span></div>
-      <h1 style="margin-top: 1.8cqw">How We'd Approach<br /><span class="accent">Heirloom.</span></h1>
-      <p class="lede" style="margin-top: 2cqw; max-width: 48cqw">Not a full proposal. More a shorthand of how we're thinking about working with you, what we'd want to explore together, and what we'd need from your side to do it properly.</p>
+      <h1>How We'd Approach<br /><span class="accent">Heirloom Coffee.</span></h1>
+      <p class="lede" style="margin-top: 2cqw; max-width: 50cqw">Not a full proposal. A short read on how we'd work with you: what we see on the site today, where the growth actually is, the moves we'd test first, and the data we'd pull together to get going.</p>
     </div>
 
     <div class="foot"><span>Pixel Theory™ 2026</span><span>New Business</span><span>How We'd Approach Heirloom</span></div>
@@ -86,9 +85,8 @@ onUnmounted(() => {
     </div>
 
     <div class="body">
-      <div class="eyebrow">01 — The opportunity</div>
-      <div class="head-split" style="margin-top: 1.3cqw">
-        <h2>The read.</h2>
+      <div class="head-split">
+        <h2>What we see.</h2>
         <p class="lede">Heirloom isn't a brand that needs help refining its story. The "Clean Craft" methodology, "Regenerative Organic Certified" sourcing, and 900+ reviews say the fundamentals are in good shape. The constraint is what happens after the landing: the site works as a catalog, not a funnel. Average order value (AOV) and lifetime value (LTV) are where the real scale is.</p>
       </div>
 
@@ -126,30 +124,29 @@ onUnmounted(() => {
     </div>
 
     <div class="body">
-      <div class="eyebrow">02 — The approach</div>
-      <div class="head-split" style="margin-top: 1.3cqw">
-        <h2>Where the work<br />actually is.</h2>
+      <div class="head-split">
+        <h2>Where we'd focus.</h2>
         <p class="lede">This isn't surface-level, section-by-section conversion lifts. It's funnel and offer architecture, built natively in Shopify Liquid, modular in the backend, with no headless rebuild.</p>
       </div>
 
       <div class="cards c4">
         <div class="card num-card">
-          <div class="top"><span class="kicker">Pillar</span><span class="badge">01</span></div>
+          <div class="top"><span class="badge">01</span></div>
           <div class="ct">Guided<br />selling</div>
           <div class="csub">New visitors get a path, not a catalog. A quiz and starter kits do the steering.</div>
         </div>
         <div class="card num-card">
-          <div class="top"><span class="kicker">Pillar</span><span class="badge y">02</span></div>
+          <div class="top"><span class="badge y">02</span></div>
           <div class="ct">Bundles &amp;<br />starter kits</div>
           <div class="csub">A proper bundle and starter-kit system, sized to raise AOV from the first order.</div>
         </div>
         <div class="card num-card">
-          <div class="top"><span class="kicker">Pillar</span><span class="badge">03</span></div>
+          <div class="top"><span class="badge">03</span></div>
           <div class="ct">Multi-unit<br />pricing</div>
           <div class="csub">Quantity breaks that make a single bag visibly the worst deal on the site.</div>
         </div>
         <div class="card num-card">
-          <div class="top"><span class="kicker">Pillar</span><span class="badge">04</span></div>
+          <div class="top"><span class="badge y">04</span></div>
           <div class="ct">Subscription<br />reframed</div>
           <div class="csub">The obvious choice at every purchase touchpoint, not a checkout afterthought.</div>
         </div>
@@ -167,14 +164,13 @@ onUnmounted(() => {
     </div>
 
     <div class="body top">
-      <div class="eyebrow">03 — Ideas · operations-driven</div>
-      <div class="head-split" style="margin-top: 1.3cqw">
+      <div class="head-split">
         <h2>Bigger lifts.</h2>
         <p class="lede">Higher-impact moves that need a conversation with whoever owns operations, stock, and margin on your side.</p>
       </div>
 
       <div class="rows two">
-        <div class="row lead">
+        <div class="row">
           <div class="rn">01</div>
           <div><div class="rt">"Passport Rewards" as the front door</div><div class="rd">Make it the primary entry to the brand, not a loyalty afterthought. New customers join on day one for member pricing and early releases. Members carry ~30% higher LTV.</div></div>
         </div>
@@ -208,13 +204,12 @@ onUnmounted(() => {
     </div>
 
     <div class="body">
-      <div class="eyebrow">04 — Ideas · no ops change</div>
-      <div class="head-split" style="margin-top: 1.3cqw">
+      <div class="head-split">
         <h2>Start now.</h2>
         <p class="lede">Moves we can run alongside, without changing how you operate. These are the ones that show value early.</p>
       </div>
 
-      <div class="cards c3">
+      <div class="cards c4">
         <div class="card note">
           <div class="ct">Landing page testing programme</div>
           <div class="csub">Pages built around specific hypotheses from the site and ad accounts. What converts there gets tested on-site. The two feed each other.</div>
@@ -245,17 +240,21 @@ onUnmounted(() => {
     </div>
 
     <div class="body">
-      <div class="eyebrow">05 — What we'd skip</div>
-      <div class="head-split" style="margin-top: 1.3cqw">
+      <div class="head-split">
         <h2>What we'd skip.</h2>
-        <p class="lede">Most agencies pitch everything. These two aren't worth your focus yet, and being honest about that is the point.</p>
+        <p class="lede">Most agencies pitch everything. These three aren't worth your focus yet, and being honest about that is the point.</p>
       </div>
 
       <div class="cards c3">
         <div class="card skip-card">
           <div class="xmark">&#10005;</div>
-          <div class="ct">Personalisation engines</div>
-          <div class="csub">You don't have the traffic or data depth yet to make search and merchandising personalisation pay. A well-built quiz does the same job at zero ongoing cost.</div>
+          <div class="ct">A headless replatform</div>
+          <div class="csub">The wins here are offer and funnel architecture, all native to Shopify Liquid. A headless rebuild adds cost and risk without moving AOV or LTV.</div>
+        </div>
+        <div class="card skip-card">
+          <div class="xmark">&#10005;</div>
+          <div class="ct">Chasing cheaper acquisition</div>
+          <div class="csub">At higher spend, cost to acquire only climbs. The profitable path is making each customer worth more, not finding each one cheaper.</div>
         </div>
         <div class="card skip-card">
           <div class="xmark">&#10005;</div>
@@ -276,10 +275,9 @@ onUnmounted(() => {
     </div>
 
     <div class="body">
-      <div class="eyebrow"><span class="l">06 — What we'd need</span></div>
-      <div class="head-split" style="margin-top: 1.3cqw">
+      <div class="head-split">
         <h2>What we'd need<br />from you.</h2>
-        <p class="lede">To build a real roadmap rather than guess, we'd want a conversation with the growth team about the data below.</p>
+        <p class="lede">Since we're already working together, the next step is a session with your growth team to pull the data that shapes the roadmap. These are the inputs we'd need them to share.</p>
       </div>
 
       <div class="asks">
@@ -519,7 +517,6 @@ h2 {
   background: var(--ink);
   border-color: transparent;
   color: #fff;
-  transform: translateY(-1.1cqw);
   box-shadow: 0 30px 60px -28px rgba(44, 15, 68, 0.6);
 }
 
