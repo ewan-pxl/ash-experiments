@@ -3,7 +3,7 @@
 A public playground. Talk to Claude, it builds a self-contained page, you push, it's live.
 
 - No homepage — `/` and anything unknown shows a **404**.
-- A hidden index of everything at **`/list`** (nothing links to it).
+- A hidden index of everything at **`/home`** (nothing links to it).
 - Each experiment is fully isolated at its own URL like `/cool-thing-001/`.
 
 ## Run it locally
@@ -13,7 +13,7 @@ npm install
 npm run dev
 ```
 
-Then open <http://localhost:5173/list>.
+Then open <http://localhost:5173/home>.
 
 ## How Claude knows what to do
 
@@ -32,7 +32,7 @@ changes needed.
 
 Live at **<https://pages.thepixeltheory.app/>** — a page lives at
 `https://pages.thepixeltheory.app/<slug>-<NNN>/`, and the hidden index is at
-<https://pages.thepixeltheory.app/list>.
+<https://pages.thepixeltheory.app/home>.
 
-> Note: `/list` is hidden only by not being linked. It is not private — anyone who knows the URL
+> Note: `/home` is hidden only by not being linked. It is not private — anyone who knows the URL
 > can see it. Don't put anything sensitive here.

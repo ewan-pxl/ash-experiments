@@ -43,7 +43,7 @@ export const pageHref = (p) =>
   import.meta.env.DEV ? `/pages/${p.slug}/` : pagePath(p) + '/'
 
 // Index link to a folder view (root list when folder is empty).
-export const folderHref = (folder) => '/list' + (folder ? '/' + folder : '')
+export const folderHref = (folder) => '/home' + (folder ? '/' + folder : '')
 
 // Clickable breadcrumb segments for a folder path.
 export const folderCrumbs = (folder) =>
@@ -80,7 +80,7 @@ export function subfolders(folder) {
 export const pagesInFolder = (folder) => pages.filter((p) => p.folder === folder)
 
 // ---- projects (sharing groups; orthogonal to folders) ----
-export const projectHref = (name) => '/list?project=' + (name ? encodeURIComponent(name) : '')
+export const projectHref = (name) => '/home?project=' + (name ? encodeURIComponent(name) : '')
 
 // All projects, most recently modified first.
 export function projectList() {

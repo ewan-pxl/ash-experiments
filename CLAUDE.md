@@ -2,7 +2,7 @@
 
 This repo is a **public scratchpad**. Someone talks to you, you build a small self-contained web
 page, and it goes live at its own URL. There is **no homepage** — the root and every unknown path
-show a 404. There is one hidden index at `/list` that lists every page.
+show a 404. There is one hidden index at `/home` that lists every page.
 
 **Your job:**
 - When asked for "a new thing", scaffold a new isolated page (recipe below).
@@ -22,7 +22,7 @@ show a 404. There is one hidden index at `/list` that lists every page.
   `meta.json` `folder` field sets where it lives in the URL — e.g. `folder: "games/arcade"` makes
   `pages/snake-007/` go live at `/games/arcade/snake-007/`. Empty `folder` = root. To move a page,
   just change its `folder`; never move or rename the on-disk folder.
-- `/list` and the 404 live in `src/` (the "shell"). You normally never touch the shell.
+- `/home` and the 404 live in `src/` (the "shell"). You normally never touch the shell.
 
 ```
 pages/
@@ -30,8 +30,8 @@ pages/
     index.html
     main.js
     App.vue
-    meta.json         ← name + description shown on /list
-src/                  ← the shell (/list + 404). Leave it alone.
+    meta.json         ← name + description shown on /home
+src/                  ← the shell (/home + 404). Leave it alone.
 ```
 
 ---
@@ -51,9 +51,9 @@ src/                  ← the shell (/list + 404). Leave it alone.
   `/<folder>/<slug>-NNN/`. Empty `""` = root. Always let him choose the folder (see the recipe)
   rather than deciding silently.
 - **Folders can nest to any depth** — separate levels with `/`, kebab-case each (e.g. `"games"`,
-  `"games/arcade"`, `"clients/zebra/decks"`). The `/list` browser drills through each level, and a
+  `"games/arcade"`, `"clients/zebra/decks"`). The `/home` browser drills through each level, and a
   guessed or custom folder can be nested too.
-- **Don't use `list` as a top-level folder** — `/list` and `/list/<folder>` are the hidden index's
+- **Don't use `home` as a top-level folder** — `/home` and `/home/<folder>` are the hidden index's
   own URLs, so a page there would collide with it.
 
 ---
@@ -77,7 +77,7 @@ src/                  ← the shell (/list + 404). Leave it alone.
 5. Create the four files below in `pages/<slug>-<NNN>/`.
 6. Build the actual thing inside `App.vue` (add more files in the same folder as needed). If it's in
    a project, put assets/fonts in the project and import them via `@projects/...` (see **Projects**).
-7. Fill in `meta.json` (including `folder` and `project`). The `/list` page picks it up automatically
+7. Fill in `meta.json` (including `folder` and `project`). The `/home` page picks it up automatically
    — **never edit any list file.**
 8. Preview, then ship (see bottom).
 
@@ -154,7 +154,7 @@ createApp(App).mount('#app')
 - **Don't edit the shell** (`src/`, the root `index.html`, `vite.config.js`) unless you're explicitly
   asked to change the framework itself.
 - **Don't renumber.** ids are forever.
-- **Don't create a homepage or link to `/list`.** The 404 and hidden index are intentional.
+- **Don't create a homepage or link to `/home`.** The 404 and hidden index are intentional.
 - **Keep `<meta name="robots" content="noindex" />` in every page's `index.html`.** Nothing here should be indexed by search engines.
 
 ---
@@ -237,7 +237,7 @@ project is — e.g. *"Is this part of a project? Projects let related pages shar
 
 ### In the index
 
-`/list` has a **Projects** tab (lists every project; click one to see its pages), and every page card
+`/home` has a **Projects** tab (lists every project; click one to see its pages), and every page card
 shows a small **project badge**. Both update automatically from the `project` fields — never edit a
 list file.
 
@@ -258,7 +258,7 @@ list file.
 ## Preview & ship
 
 - First time: `npm install`. Then `npm run dev`.
-- The index is at <http://localhost:5173/list> (it links to each page automatically).
+- The index is at <http://localhost:5173/home> (it links to each page automatically).
 - A page in dev is served at `http://localhost:5173/pages/<slug>-<NNN>/index.html`.
 - **Go live:** commit and push. Cloudflare Pages builds (`npm run build` → `dist`) and deploys.
   The page is then live at:

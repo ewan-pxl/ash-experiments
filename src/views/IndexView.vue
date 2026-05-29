@@ -13,19 +13,19 @@ import {
 } from '../pages.js'
 
 // Decode the URL into {tab, folder, project}.
-//   /list                  → folder browser at root (default)
-//   /list/<folder>         → folder browser at that folder
-//   /list?project          → projects browser (root = list of projects)
-//   /list?project=<name>   → that project's pages
+//   /home                  → folder browser at root (default)
+//   /home/<folder>         → folder browser at that folder
+//   /home?project          → projects browser (root = list of projects)
+//   /home?project=<name>   → that project's pages
 function parseLocation() {
   const params = new URLSearchParams(window.location.search)
   if (params.has('project')) {
     return { tab: 'projects', folder: '', project: (params.get('project') || '').trim() }
   }
   const path = window.location.pathname.replace(/\/+$/, '')
-  if (path.startsWith('/list/')) {
+  if (path.startsWith('/home/')) {
     const folder = path
-      .slice('/list/'.length)
+      .slice('/home/'.length)
       .split('/')
       .map((s) => {
         try {
@@ -97,7 +97,7 @@ const stateFor = (t, f, p) => ({ idx: true, tab: t, folder: f, project: p })
 const urlFor = (t, f, p) => {
   if (t === 'projects') return projectHref(p)
   if (t === 'folder' && f) return folderHref(f)
-  return '/list'
+  return '/home'
 }
 function go(t, f = '', p = '') {
   tab.value = t
@@ -202,7 +202,7 @@ onBeforeUnmount(() => window.removeEventListener('popstate', onPop))
     <!-- FOLDER BROWSER -->
     <template v-else-if="tab === 'folder'">
       <nav v-if="folder" class="breadcrumb">
-        <a href="/list" @click="clickNav($event, 'folder', '')">root</a>
+        <a href="/home" @click="clickNav($event, 'folder', '')">root</a>
         <template v-for="(c, i) in crumbs" :key="c.href">
           <span class="sep">/</span>
           <a v-if="i < crumbs.length - 1" :href="c.href" @click="clickNav($event, 'folder', c.folder)">{{
@@ -249,7 +249,7 @@ onBeforeUnmount(() => window.removeEventListener('popstate', onPop))
       <!-- a specific project: just its pages -->
       <template v-if="project">
         <nav class="breadcrumb">
-          <a href="/list?project=" @click="clickNav($event, 'projects', '', '')">projects</a>
+          <a href="/home?project=" @click="clickNav($event, 'projects', '', '')">projects</a>
           <span class="sep">/</span>
           <span class="current">{{ project }}</span>
         </nav>
