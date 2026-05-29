@@ -141,13 +141,6 @@ a {
   color: #03070f;
   font-weight: 600;
 }
-.tab:disabled {
-  opacity: 0.35;
-  cursor: not-allowed;
-}
-.tab:disabled:hover {
-  color: var(--muted);
-}
 
 .breadcrumb {
   display: flex;

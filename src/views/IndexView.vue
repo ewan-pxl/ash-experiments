@@ -114,7 +114,8 @@ const crumbs = computed(() => folderCrumbs(folder.value))
 const allProjects = computed(() => projectList())
 const projectPages = computed(() => pagesInProject(project.value))
 
-const listLocked = computed(
+// "Drilled in" = inside a specific folder or project (a breadcrumb is shown to get back out).
+const drilledIn = computed(
   () => (tab.value === 'folder' && !!folder.value) || (tab.value === 'projects' && !!project.value),
 )
 
@@ -234,7 +235,7 @@ onBeforeUnmount(() => window.removeEventListener('popstate', onPop))
       </button>
     </div>
 
-    <div v-if="pages.length && !searching" class="tabs">
+    <div v-if="pages.length && !searching && !drilledIn" class="tabs">
       <button type="button" class="tab" :class="{ active: tab === 'folder' }" @click="go('folder')">
         Folder
       </button>
@@ -246,14 +247,7 @@ onBeforeUnmount(() => window.removeEventListener('popstate', onPop))
       >
         Projects
       </button>
-      <button
-        type="button"
-        class="tab"
-        :class="{ active: tab === 'list' }"
-        :disabled="listLocked"
-        title="Go to a root to switch to list view"
-        @click="go('list')"
-      >
+      <button type="button" class="tab" :class="{ active: tab === 'list' }" @click="go('list')">
         List
       </button>
       <button type="button" class="tab" :class="{ active: tab === 'tags' }" @click="go('tags')">
