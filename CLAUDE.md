@@ -33,6 +33,83 @@ to the committed `./content` snapshot — run `npm run sync-content` before depl
 
 ---
 
+## Experiments — client strategy concepts (read first for any Experiments page)
+
+**Experiments exist to support client strategy.** They're the *in-the-business* delivery step:
+fleshed-out concepts, built against a brand's real tokens (pull from **Assets** / the `branding`
+repo), that we use to strategise options and hand designers something concrete to tweak. Keep the
+Experiments area to that — client-level strategy concepts, nothing else. (Proposals, reporting and
+internal decks are **Agency**, `kind: "agency"`.)
+
+### Always start by asking how many concepts
+
+When asked for a new experiment, the **first question** is:
+
+> **How many concepts do you want — 1, 2, 3, or 4?**
+
+- **1 concept** → build a single isolated page the normal way (recipe below), `kind: "experiment"`.
+- **2–4 concepts** → from the *same brief*, produce that many **distinct directions**, then house
+  them at one URL with a left-hand toggle (below). Spin up **one sub-agent per concept** so each
+  direction is explored independently and in parallel, each writing its own isolated concept page.
+
+### Variant set (the toggle housing)
+
+For 2–4 concepts:
+
+1. Build each concept as its own normal isolated page (`pages/<slug>-NNN/`, `kind: "experiment"`),
+   ideally grouped under one folder via `meta.json` `folder` (e.g. `"clients/<brand>/<brief>"`).
+2. Build one extra **variant-set** page (also `kind: "experiment"`) whose `App.vue` is the wrapper
+   below. It full-screens the active concept in an iframe and shows a small fixed **left-hand rail**
+   to switch (number keys `1–4` too). Each concept stays a separate document, so no style bleed.
+3. The set's `meta.json` lists the concepts; hand over the **set URL** (the toggle is the entry point).
+
+`App.vue` for a variant-set page (fill in `variants` with each concept's live path + label):
+```vue
+<script setup>
+import { ref, onMounted, onBeforeUnmount } from 'vue'
+// label = shown in the rail; href = the concept page's live path (…/<folder>/<slug>-NNN/)
+const variants = [
+  { label: 'Bold', href: '/clients/acme/brief/concept-bold-012/' },
+  { label: 'Calm', href: '/clients/acme/brief/concept-calm-013/' },
+]
+const active = ref(0)
+const show = (i) => { if (i >= 0 && i < variants.length) active.value = i }
+const onKey = (e) => { const n = Number(e.key); if (n >= 1 && n <= variants.length) show(n - 1) }
+onMounted(() => window.addEventListener('keydown', onKey))
+onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
+</script>
+<template>
+  <iframe class="stage" :src="variants[active].href" title="concept" />
+  <nav class="rail">
+    <p class="lbl">Concepts</p>
+    <template v-for="(v, i) in variants" :key="v.href">
+      <button class="pip" :class="{ active: i === active }" :title="v.label" @click="show(i)">{{ i + 1 }}</button>
+      <span class="name">{{ v.label }}</span>
+    </template>
+  </nav>
+</template>
+<style scoped>
+.stage { position: fixed; inset: 0; width: 100%; height: 100%; border: 0; background: #fff; }
+.rail { position: fixed; top: 50%; left: 14px; transform: translateY(-50%); z-index: 2147483647;
+  display: flex; flex-direction: column; gap: 6px; padding: 8px; border-radius: 14px;
+  background: rgba(255,255,255,.86); border: 1px solid rgba(44,15,68,.12);
+  box-shadow: 0 8px 24px rgba(44,15,68,.12); backdrop-filter: blur(8px);
+  font-family: 'Inter', system-ui, sans-serif; }
+.lbl { margin: 2px 0 4px; font-family: 'Geist Mono', monospace; font-size: .6rem; letter-spacing: .08em;
+  text-transform: uppercase; color: rgba(44,15,68,.55); text-align: center; }
+.pip { appearance: none; border: 0; cursor: pointer; width: 40px; height: 40px; border-radius: 10px;
+  font: 600 .95rem 'Inter', sans-serif; color: #2c0f44; background: transparent; transition: .15s; }
+.pip:hover { background: rgba(44,15,68,.07); }
+.pip.active { background: #9224e9; color: #fff; }
+.name { font-family: 'Funnel Display', sans-serif; font-size: .62rem; color: rgba(44,15,68,.55);
+  text-align: center; max-width: 52px; line-height: 1.15; }
+</style>
+```
+The set's `index.html` / `main.js` are the standard page templates below. Concept pages render
+normally at their own URLs; the set just frames them.
+
+---
+
 ## How it's built
 
 - Vue 3 + Vite. Deployed to Cloudflare Pages (push to deploy).
