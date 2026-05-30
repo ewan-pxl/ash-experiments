@@ -277,7 +277,9 @@ file.
 
 - First time: `npm install`. Then `npm run dev`.
 - The index is at <http://localhost:5173/home> (it links to each page automatically).
-- A page in dev is served at `http://localhost:5173/pages/<slug>-<NNN>/index.html`.
+- **Dev serves the exact same clean URLs as production**, so a page is at
+  `http://localhost:5173/<folder-slugged>/<slug>-<NNN>/` — identical to the live link, just on
+  localhost. (A dev middleware maps it to the on-disk page; you never need the `/pages/...` path.)
 - **Before the first push,** show him the `tags` you guessed for the page and let him tweak them — it
   guesses, he confirms. (Folder and project were already chosen at creation; tags are the one bit of
   `meta.json` worth a quick confirm at ship time.)

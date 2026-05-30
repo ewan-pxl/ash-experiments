@@ -80,8 +80,55 @@ function flattenPages() {
   }
 }
 
+// In dev there's no flatten step, so map the clean public URL (/<folder>/<slug>/)
+// to the on-disk /pages/<slug>/ path. Result: dev serves the exact same URLs as
+// the built site. The page slug (…-NNN) is the routing key; the folder is cosmetic.
+function devCleanUrls() {
+  return {
+    name: 'dev-clean-urls',
+    apply: 'serve',
+    configureServer(server) {
+      server.middlewares.use((req, _res, next) => {
+        const url = req.url || '/'
+        if (
+          url[1] === '@' ||
+          url.startsWith('/node_modules') ||
+          url.startsWith('/src/') ||
+          url.startsWith('/pages/') ||
+          url.startsWith('/home')
+        ) {
+          return next()
+        }
+        const [pathPart, q] = url.split('?')
+        const segs = pathPart
+          .split('/')
+          .filter(Boolean)
+          .map((s) => {
+            try {
+              return decodeURIComponent(s)
+            } catch {
+              return s
+            }
+          })
+        let idx = -1
+        for (let i = segs.length - 1; i >= 0; i--) {
+          if (/-\d{3}$/.test(segs[i]) && existsSync(resolve(pagesDir, segs[i]))) {
+            idx = i
+            break
+          }
+        }
+        if (idx === -1) return next()
+        const slug = segs[idx]
+        const rest = segs.slice(idx + 1).join('/')
+        req.url = (rest ? `/pages/${slug}/${rest}` : `/pages/${slug}/index.html`) + (q ? `?${q}` : '')
+        next()
+      })
+    },
+  }
+}
+
 export default defineConfig({
-  plugins: [vue(), flattenPages()],
+  plugins: [vue(), flattenPages(), devCleanUrls()],
   resolve: {
     // Pages in a project import shared assets/code via @projects/<name>/...
     alias: { '@projects': resolve(root, 'projects') },

@@ -56,9 +56,9 @@ export const pages = Object.entries(modules)
 // Canonical public path of a page (slugged folder), e.g. /games/arcade/snake-007.
 export const pagePath = (p) => '/' + [slugifyPath(p.folder), p.slug].filter(Boolean).join('/')
 
-// Live href: dev serves pages flat at /pages/<slug>/ (trailing slash required —
-// without it Vite falls back to the shell); the build lifts to pagePath().
-export const pageHref = (p) => (import.meta.env.DEV ? `/pages/${p.slug}/` : pagePath(p) + '/')
+// Live href — the clean public path, identical in dev and prod (a dev middleware
+// maps these URLs onto the on-disk /pages/<slug>/ files).
+export const pageHref = (p) => pagePath(p) + '/'
 
 // Index link to a folder view (root list when folder is empty); always slugged.
 export const folderHref = (folder) => '/home' + (folder ? '/' + slugifyPath(folder) : '')
