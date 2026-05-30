@@ -2,6 +2,10 @@
 import { onMounted, onUnmounted } from 'vue'
 import ptLogo from '@projects/PXL decks/logo.svg?raw'
 import '@projects/PXL decks/brand.css'
+import ashPhoto from '@projects/PXL decks/assets/team/ash.webp'
+import lucasPhoto from '@projects/PXL decks/assets/team/lucas.webp'
+import ewanPhoto from '@projects/PXL decks/assets/team/ewan.webp'
+import ashtonPhoto from '@projects/PXL decks/assets/team/ashton.webp'
 
 let onKeydown = null
 
@@ -54,10 +58,10 @@ onUnmounted(() => {
 
     <div class="body">
       <h1>Green Garden<br /><span class="accent">Statement of Work.</span></h1>
-      <p class="lede" style="margin-top: 2cqw; max-width: 52cqw">A working SOW for your review before we put a signable version in place. Scope, timeline and numbers are below. Flag anything you want adjusted.</p>
+      <p class="lede" style="margin-top: 2cqw; max-width: 52cqw">This scopes the post-click build we'd bolt onto the growth work we already run for Green Garden. Scope, timeline and numbers are below, so flag anything you want adjusted.</p>
     </div>
 
-    <div class="foot"><span>Pixel Theory™ 2026</span><span>New Business</span><span>Green Garden · SOW</span></div>
+    <div class="foot"><span>Pixel Theory™ 2026</span><span>Post-Click expansion</span><span>Green Garden · SOW</span></div>
   </section>
 
   <!-- ================= SLIDE 2 — THE SETUP ================= -->
@@ -70,28 +74,28 @@ onUnmounted(() => {
     <div class="body">
       <div class="head-split">
         <h2>The setup.</h2>
-        <p class="lede">This isn't a retainer. We come in as a SWAT team, hit clear deliverables across a defined window, and leave you with assets that compound. Everything is built for Ferry Morse (US) first, then extrapolated to McKenzie Seeds (Canada).</p>
+        <p class="lede">You already know us — we run Green Garden's growth. This bolts our post-click squad onto that engagement: a fixed-window SWAT build that owns everything after the click. Two custom builds, Ferry Morse (US) and McKenzie Seeds (Canada), share one system but are each shaped by their own research.</p>
       </div>
 
       <div class="cards c3">
         <div class="card">
           <div class="clabel">Onboarding sprint</div>
-          <div class="stat">6 wks</div>
+          <div class="stat">4–6 wks</div>
           <div class="divider"></div>
-          <div class="csub">Research and UI kits in place for both brands before any build starts.</div>
+          <div class="csub">Customer surveys, on-site analysis and message mining across both markets, feeding the UI kits the entire build runs on.</div>
         </div>
         <div class="card">
           <div class="clabel">Execution window</div>
           <div class="stat">3 mo</div>
           <div class="divider"></div>
-          <div class="csub">Navigation, landing pages and the quiz funnel, shipped for Ferry Morse.</div>
+          <div class="csub">Nav and cart, three landing pages with reusable meta objects, and the quiz funnel — built custom for each brand off the research.</div>
         </div>
         <div class="card feature">
           <span class="pill"><span class="dot"></span>End to end</span>
           <div class="clabel">Total engagement</div>
-          <div class="stat">~4.5 mo</div>
+          <div class="stat">4–4.5 mo</div>
           <div class="divider"></div>
-          <div class="csub">Onboarding plus execution, from kickoff to the McKenzie carbon copy.</div>
+          <div class="csub">Onboarding plus execution, end to end — two bespoke builds, every asset yours to keep and scale.</div>
         </div>
       </div>
     </div>
@@ -109,29 +113,45 @@ onUnmounted(() => {
     <div class="body">
       <div class="head-split">
         <h2>What you get.</h2>
-        <p class="lede">Four deliverables across the engagement, each built to be reused and scaled by your team without dev support.</p>
+        <p class="lede">Four deliverables on the post-click side, each built to be reused and scaled by your team without dev support.</p>
       </div>
 
       <div class="cards c4">
         <div class="card num-card">
           <div class="top"><span class="badge">01</span></div>
           <div class="ct">Nav + cart<br />overhaul</div>
-          <div class="csub">Guided paths for undecided shoppers, and a cart re-engineered to lift average order value (AOV).</div>
+          <ul class="feats">
+            <li>Guided selling paths for undecided shoppers</li>
+            <li>Cart rebuilt with merchandising and recommendations</li>
+            <li>Engineered to lift average order value (AOV)</li>
+          </ul>
         </div>
         <div class="card num-card">
           <div class="top"><span class="badge y">02</span></div>
           <div class="ct">Three<br />landing pages</div>
-          <div class="csub">A video sales letter, a long-form sales letter, and a product page template, each also a reusable meta object.</div>
+          <ul class="feats">
+            <li>Video sales letter, long-form letter, product page</li>
+            <li>Each a standalone landing page</li>
+            <li>Plus a reusable meta object, no dev needed</li>
+          </ul>
         </div>
         <div class="card num-card">
           <div class="top"><span class="badge">03</span></div>
           <div class="ct">15–20 modular<br />blocks</div>
-          <div class="csub">Section blocks across the pages, recombined sitewide so you're never locked to one layout.</div>
+          <ul class="feats">
+            <li>Reusable section blocks across the pages</li>
+            <li>Recombine across the site, never one layout</li>
+            <li>Built natively in Shopify Liquid</li>
+          </ul>
         </div>
         <div class="card num-card">
           <div class="top"><span class="badge y">04</span></div>
-          <div class="ct">Quiz funnel<br />+ lead magnet</div>
-          <div class="csub">Built on the Hume quiz model, paired with a refreshed lead magnet.</div>
+          <div class="ct">Custom quiz<br />funnel</div>
+          <ul class="feats">
+            <li>Built from scratch for your catalog, not a template</li>
+            <li>Bespoke logic and a fully custom tech stack</li>
+            <li>Personalised bundle output, plus a fresh lead magnet</li>
+          </ul>
         </div>
       </div>
     </div>
@@ -149,19 +169,24 @@ onUnmounted(() => {
     <div class="body">
       <div class="head-split">
         <h2>What we're not doing.</h2>
-        <p class="lede">Two things deliberately out of scope, so the boundaries are clear from day one.</p>
+        <p class="lede">A few things deliberately out of scope, so the boundaries are clear from day one.</p>
       </div>
 
       <div class="cards c3">
         <div class="card skip-card">
           <div class="xmark">&#10005;</div>
           <div class="ct">Asset generation</div>
-          <div class="csub">We brief your illustrators and graphic designers. The visual production lands on your side, not ours.</div>
+          <div class="csub">We brief your illustrators and graphic designers, but the visual production itself lands on your side, not ours.</div>
         </div>
         <div class="card skip-card">
           <div class="xmark">&#10005;</div>
-          <div class="ct">McKenzie before Ferry Morse</div>
-          <div class="csub">No McKenzie Seeds build until Ferry Morse is shipped. Canada gets the carbon copy after.</div>
+          <div class="ct">Paid media</div>
+          <div class="csub">Already owned by your Pixel Theory growth team. They run the traffic and spend, and this squad owns the rest.</div>
+        </div>
+        <div class="card skip-card">
+          <div class="xmark">&#10005;</div>
+          <div class="ct">Brand identity</div>
+          <div class="csub">No logo or rebrand work. We design within your existing brand and sharpen it, rather than replace it.</div>
         </div>
       </div>
     </div>
@@ -179,21 +204,21 @@ onUnmounted(() => {
     <div class="body top">
       <div class="head-split">
         <h2>The timeline.</h2>
-        <p class="lede">Two phases across roughly four and a half months, Ferry Morse first and McKenzie ported after.</p>
+        <p class="lede">Two phases across roughly four to four and a half months, both brands built custom off the research.</p>
       </div>
 
       <div class="rows">
         <div class="row">
           <div class="rn">01</div>
-          <div><div class="rt">Onboarding · 6 weeks</div><div class="rd">Customer surveys, on-site analysis and message mining. UI kits built for both brands, which is why this runs six weeks instead of our standard four.</div></div>
+          <div><div class="rt">Onboarding · 4–6 weeks</div><div class="rd">Customer surveys, on-site analysis and message mining across both markets, building on what the growth side already knows about your buyers. We set the UI kits the whole build runs on, and it's this research that makes each build its own rather than a copy.</div></div>
         </div>
         <div class="row">
           <div class="rn">02</div>
-          <div><div class="rt">Execution · 3 months</div><div class="rd">Navigation and cart, three landing pages with their meta object versions, and the quiz funnel with its lead magnet. All for Ferry Morse, then ported to McKenzie Seeds.</div></div>
+          <div><div class="rt">Execution · 3 months</div><div class="rd">Navigation and cart, three landing pages with their meta object versions, and the quiz funnel with its lead magnet — built as two custom storefronts, Ferry Morse and McKenzie Seeds, each tuned to its own research.</div></div>
         </div>
         <div class="row">
           <div class="rn">03</div>
-          <div><div class="rt">End to end · ~4.5 months</div><div class="rd">From kickoff to the McKenzie carbon copy, you keep every asset built along the way.</div></div>
+          <div><div class="rt">End to end · 4–4.5 months</div><div class="rd">From kickoff to two finished builds, you keep every asset created along the way — yours to reuse and scale.</div></div>
         </div>
       </div>
     </div>
@@ -232,7 +257,7 @@ onUnmounted(() => {
           <div class="clabel">Flat monthly rate</div>
           <div class="stat">$8,000</div>
           <div class="divider"></div>
-          <div class="csub">Covers the whole team and every deliverable, billed monthly.</div>
+          <div class="csub">Covers the post-click squad and every deliverable, billed monthly alongside your growth retainer.</div>
         </div>
       </div>
     </div>
@@ -250,25 +275,33 @@ onUnmounted(() => {
     <div class="body">
       <div class="head-split">
         <h2>Who's in the room.</h2>
-        <p class="lede">A senior team, lean by design. Everyone here is hands-on across the engagement.</p>
+        <p class="lede">Your post-click squad at Pixel Theory — the same shop already running Green Garden's growth. Senior, lean, and hands-on across the build.</p>
       </div>
 
       <div class="cards c4">
         <div class="card note">
+          <img class="team-photo" :src="ashPhoto" alt="Ash" />
           <div class="ct">Ash</div>
-          <div class="csub">Post-Click Director. Owns the engagement.</div>
+          <div class="crole">Post-Click</div>
+          <div class="csub">Runs the program end to end and holds quality at every touchpoint, and is your first port of call.</div>
         </div>
         <div class="card note">
-          <div class="ct">Lucas</div>
-          <div class="csub">Strategy.</div>
+          <img class="team-photo" :src="lucasPhoto" alt="Lucas Mondora" />
+          <div class="ct">Lucas Mondora</div>
+          <div class="crole">Strategy</div>
+          <div class="csub">Owns the roadmap and testing prioritisation, with full autonomy over what we run and in what order.</div>
         </div>
         <div class="card note">
-          <div class="ct">Ewan</div>
-          <div class="csub">Technical and development.</div>
+          <img class="team-photo" :src="ewanPhoto" alt="Ewan Howell" />
+          <div class="ct">Ewan Howell</div>
+          <div class="crole">Technical</div>
+          <div class="csub">Owns all technical implementation across both brands. Anything technical routes straight through him.</div>
         </div>
         <div class="card note">
-          <div class="ct">CRO design lead</div>
-          <div class="csub">Supporting execution across both brands.</div>
+          <img class="team-photo" :src="ashtonPhoto" alt="Ashton Dunn" />
+          <div class="ct">Ashton Dunn</div>
+          <div class="crole">Design</div>
+          <div class="csub">Works hand in hand with Ash on design, carrying the visual system across every page and every block.</div>
         </div>
       </div>
     </div>
@@ -291,7 +324,7 @@ onUnmounted(() => {
 
       <div class="asks">
         <div class="ask"><div class="an">1</div><div class="ad">A point of contact for research access.</div></div>
-        <div class="ask"><div class="an">2</div><div class="ad">Brand assets for Ferry Morse and McKenzie Seeds: logos, fonts, UI patterns, any existing style guide.</div></div>
+        <div class="ask"><div class="an">2</div><div class="ad">Any brand assets we don't already hold from the growth side: fonts, UI patterns, any existing style guide for both brands.</div></div>
         <div class="ask"><div class="an">3</div><div class="ad">Access to your designer and illustrator for asset briefs.</div></div>
         <div class="ask"><div class="an">4</div><div class="ad">A bi-weekly 30-minute check-in slot during execution.</div></div>
       </div>
@@ -577,12 +610,34 @@ h2 {
   background: var(--ink);
 }
 
+.card.note .team-photo {
+  width: 5.4cqw;
+  height: 5.4cqw;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 1.4cqw;
+  background: var(--line-l);
+  border: 1px solid var(--line-l);
+}
 .card.note .ct {
   font-family: var(--display);
   font-weight: 600;
-  font-size: 1.85cqw;
-  line-height: 1.08;
-  margin-bottom: 0.8cqw;
+  font-size: 1.7cqw;
+  line-height: 1.06;
+  margin-bottom: 0.35cqw;
+}
+.card.note .crole {
+  font-family: var(--mono);
+  font-size: 0.9cqw;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--mut-l);
+  margin-bottom: 0.85cqw;
+  white-space: nowrap;
+}
+.card.note .ct {
+  white-space: nowrap;
 }
 .card.note .csub {
   margin-top: 0;
@@ -593,7 +648,7 @@ h2 {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 2.6cqw;
+  margin-bottom: 1.6cqw;
 }
 .num-card .kicker {
   font-family: var(--mono);
@@ -629,6 +684,32 @@ h2 {
 }
 .num-card .csub {
   margin-top: 0;
+}
+
+/* ticked feature list (deliverables) */
+.feats {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.95cqw;
+}
+.feats li {
+  position: relative;
+  padding-left: 2cqw;
+  font-size: 1.12cqw;
+  line-height: 1.34;
+  color: var(--body-l);
+}
+.feats li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 1.12cqw;
 }
 
 /* skip cards */
