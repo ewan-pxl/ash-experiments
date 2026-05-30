@@ -28,6 +28,10 @@ function pick() {
 }
 const area = pick()
 
+// The launcher (home) runs the deck's dark purple theme; inner areas stay light.
+// Gate it on a body class so the full-bleed background only applies to /home.
+if (area === 'launcher') document.body.classList.add('home')
+
 const titles = {
   launcher: 'Post-Click OS',
   experiments: 'Experiments',

@@ -51,7 +51,7 @@ const cards = [
   <main class="launch">
     <header class="launch-head">
       <PtLogo class="launch-logo" />
-      <h1>Post-Click OS</h1>
+      <h1>Post-Click <span class="os">OS</span></h1>
       <p class="tagline">Pixel Theory's internal home — experiments, agency work, the wiki, and assets, all in one place.</p>
     </header>
 
@@ -70,6 +70,23 @@ const cards = [
 
 <style scoped>
 .launch {
+  /* Dark-surface token overrides, scoped to the home launcher. The cards and text below
+     read these variables, so re-tinting them here flips the whole launcher to the purple
+     theme without affecting any inner page. */
+  --panel: rgba(255, 255, 255, 0.05);
+  --border: rgba(255, 255, 255, 0.12);
+  --border-strong: rgba(255, 255, 255, 0.26);
+  --ink: #ffffff;
+  --body: rgba(207, 174, 237, 0.84);
+  --muted: rgba(207, 174, 237, 0.62);
+  --accent: #cfaeed;
+  --accent-soft: rgba(146, 36, 233, 0.32);
+  --good: #84d6a3;
+  --good-soft: rgba(132, 214, 163, 0.16);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.25), 0 18px 40px -24px rgba(0, 0, 0, 0.6);
+  --shadow-hover: 0 2px 8px rgba(0, 0, 0, 0.32), 0 26px 60px -28px rgba(0, 0, 0, 0.72);
+
+  min-height: 100vh;
   max-width: 960px;
   margin: 0 auto;
   padding: 6rem 1.25rem 6rem;
@@ -89,6 +106,9 @@ const cards = [
   font-weight: 700;
   letter-spacing: -0.03em;
   color: var(--ink);
+}
+.launch-head h1 .os {
+  color: var(--yellow);
 }
 .tagline {
   margin: 0;
@@ -115,6 +135,8 @@ const cards = [
   border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
   transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
 .launch-card:hover {
@@ -137,7 +159,7 @@ const cards = [
   color: var(--accent);
 }
 .launch-card.agency .launch-icon {
-  background: rgba(44, 15, 68, 0.08);
+  background: rgba(255, 255, 255, 0.1);
   color: var(--ink);
 }
 .launch-card.wiki .launch-icon {
@@ -146,7 +168,7 @@ const cards = [
 }
 .launch-card.assets .launch-icon {
   background: rgba(254, 194, 0, 0.18);
-  color: #b58800;
+  color: var(--yellow);
 }
 .launch-title {
   font-family: var(--display);
