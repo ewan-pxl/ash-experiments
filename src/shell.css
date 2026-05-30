@@ -210,7 +210,9 @@ a {
 .card.folder-card {
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
+  justify-content: space-between;
+  gap: 0.6rem;
+  height: 100%;
 }
 .folder-head {
   display: flex;

@@ -10,6 +10,9 @@ import {
   projectList,
   pagesInProject,
   projectHref,
+  pagesInSubtree,
+  resolveFolder,
+  resolveProject,
   tagHue,
 } from '../pages.js'
 
@@ -24,11 +27,11 @@ function parseLocation() {
     return { tab: 'tags', folder: '', project: '' }
   }
   if (params.has('project')) {
-    return { tab: 'projects', folder: '', project: (params.get('project') || '').trim() }
+    return { tab: 'projects', folder: '', project: resolveProject((params.get('project') || '').trim()) }
   }
   const path = window.location.pathname.replace(/\/+$/, '')
   if (path.startsWith('/home/')) {
-    const folder = path
+    const urlFolder = path
       .slice('/home/'.length)
       .split('/')
       .map((s) => {
@@ -41,7 +44,8 @@ function parseLocation() {
       .map((s) => s.trim())
       .filter(Boolean)
       .join('/')
-    return { tab: 'folder', folder, project: '' }
+    // URL may be slugged or cased differently — map back to the real folder.
+    return { tab: 'folder', folder: resolveFolder(urlFolder), project: '' }
   }
   return { tab: 'folder', folder: '', project: '' }
 }
@@ -63,10 +67,7 @@ const tagQuery = computed(() => {
 // Flat list/search is scoped to the current folder subtree or project.
 const scope = computed(() => {
   if (tab.value === 'projects' && project.value) return pagesInProject(project.value)
-  if (tab.value === 'folder' && folder.value) {
-    const f = folder.value
-    return pages.filter((p) => p.folder === f || p.folder.startsWith(f + '/'))
-  }
+  if (tab.value === 'folder' && folder.value) return pagesInSubtree(folder.value)
   return pages
 })
 const filtered = computed(() => {
@@ -133,8 +134,8 @@ function setTitle() {
 // --- client-side nav (page links stay real full-page loads) ---
 const stateFor = (t, f, p) => ({ idx: true, tab: t, folder: f, project: p })
 const urlFor = (t, f, p) => {
-  if (t === 'tags') return '/home?tags'
-  if (t === 'projects') return projectHref(p)
+  // Only the "drilled-in" states get a query/path; tab roots are just /home.
+  if (t === 'projects' && p) return projectHref(p)
   if (t === 'folder' && f) return folderHref(f)
   return '/home'
 }
@@ -328,7 +329,7 @@ onBeforeUnmount(() => window.removeEventListener('popstate', onPop))
       <!-- a specific project: just its pages -->
       <template v-if="project">
         <nav class="breadcrumb">
-          <a href="/home?project=" @click="clickNav($event, 'projects', '', '')">projects</a>
+          <a href="/home" @click="clickNav($event, 'projects', '', '')">projects</a>
           <span class="sep">/</span>
           <span class="current">{{ project }}</span>
         </nav>

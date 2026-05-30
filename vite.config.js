@@ -8,12 +8,13 @@ const root = dirname(fileURLToPath(import.meta.url))
 const pagesDir = resolve(root, 'pages')
 
 // A page's URL folder comes from its meta.json `folder` field (virtual — the
-// pages/ dir stays flat). "Games/Arcade" or "/games/arcade/" → "games/arcade".
+// pages/ dir stays flat). Slugged to lowercase-dashes so the public path is clean:
+// "Statement of Works" → "statement-of-works", "Games/Arcade" → "games/arcade".
 function normalizeFolder(f) {
   if (typeof f !== 'string') return ''
   return f
     .split('/')
-    .map((s) => s.trim())
+    .map((s) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''))
     .filter(Boolean)
     .join('/')
 }
