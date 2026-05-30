@@ -1,6 +1,4 @@
 <script setup>
-import '@projects/PXL decks/brand.css'
-import '@projects/PXL decks/deck.css'
 import { useDeckNav } from '@projects/PXL decks/shared/useDeckNav.js'
 import DeckPage from '@projects/PXL decks/shared/DeckPage.vue'
 import DeckSlide from '@projects/PXL decks/shared/DeckSlide.vue'
@@ -138,17 +136,3 @@ const asks = [
     </DeckSlide>
   </DeckPage>
 </template>
-
-<style>
-/* Zebra-only: "start now" idea cards (originally inline-styled, now note cards) */
-.card.note .ct {
-  font-family: var(--display);
-  font-weight: 600;
-  font-size: 1.85cqw;
-  line-height: 1.08;
-  margin-bottom: 0.8cqw;
-}
-.card.note .csub {
-  margin-top: 0;
-}
-</style>

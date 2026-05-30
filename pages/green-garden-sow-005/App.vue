@@ -1,6 +1,4 @@
 <script setup>
-import '@projects/PXL decks/brand.css'
-import '@projects/PXL decks/deck.css'
 import { useDeckNav } from '@projects/PXL decks/shared/useDeckNav.js'
 import DeckPage from '@projects/PXL decks/shared/DeckPage.vue'
 import DeckSlide from '@projects/PXL decks/shared/DeckSlide.vue'
@@ -120,7 +118,7 @@ const asks = [
         title="Who's in the room."
         lede="Your post-click squad at Pixel Theory — the same shop already running Green Garden's growth. Senior, lean, and hands-on across the build."
       />
-      <NoteCards :items="team" :cols="4" />
+      <NoteCards :items="team" :cols="4" variant="team" />
     </DeckSlide>
 
     <!-- 8 — what we'd need / next steps -->
@@ -136,64 +134,3 @@ const asks = [
     </DeckSlide>
   </DeckPage>
 </template>
-
-<style>
-/* Green Garden-only: team "note" cards, ticked feature lists, tighter num-card */
-.card.note .team-photo {
-  width: 5.4cqw;
-  height: 5.4cqw;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-bottom: 1.4cqw;
-  background: var(--line-l);
-  border: 1px solid var(--line-l);
-}
-.card.note .ct {
-  font-family: var(--display);
-  font-weight: 600;
-  font-size: 1.7cqw;
-  line-height: 1.06;
-  margin-bottom: 0.35cqw;
-  white-space: nowrap;
-}
-.card.note .crole {
-  font-family: var(--mono);
-  font-size: 0.9cqw;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--mut-l);
-  margin-bottom: 0.85cqw;
-  white-space: nowrap;
-}
-.card.note .csub {
-  margin-top: 0;
-}
-.feats {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.95cqw;
-}
-.feats li {
-  position: relative;
-  padding-left: 2cqw;
-  font-size: 1.12cqw;
-  line-height: 1.34;
-  color: var(--body-l);
-}
-.feats li::before {
-  content: '✓';
-  position: absolute;
-  left: 0;
-  top: 0;
-  color: var(--ink);
-  font-weight: 700;
-  font-size: 1.12cqw;
-}
-.cards .num-card .top {
-  margin-bottom: 1.6cqw;
-}
-</style>

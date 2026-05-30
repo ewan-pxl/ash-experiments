@@ -1,6 +1,7 @@
-/* Shared deck styles for the PXL decks project (brand tokens live in brand.css).
-   Per-deck extras (.note variants, .feats, num-card spacing) stay in each page's local <style>. */
-/* Brand tokens (palette + fonts) come from @projects/PXL decks/brand.css */
+/* Standardised patterns shared across every deck (brand tokens live in brand.css).
+   These are the things used *everywhere* or that cross component/slot boundaries:
+   the slide surface, tone theming, typography, and the base card pattern.
+   Component-specific styling lives scoped inside each component. */
 
 * {
   box-sizing: border-box;
@@ -17,7 +18,7 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* ---------- slide shell ---------- */
+/* ---------- slide surface + tone (the print rule below relies on .slide being global) ---------- */
 .slide {
   position: relative;
   width: min(100%, 1180px);
@@ -31,7 +32,6 @@ body {
   flex-direction: column;
   padding: 4.7cqw 4.9cqw 4cqw;
 }
-
 .is-light {
   background-color: var(--cream);
   color: var(--ink);
@@ -45,76 +45,7 @@ body {
   background-size: 24px 24px, 100% 100%, 100% 100%;
 }
 
-/* ---------- header / footer rails ---------- */
-.rail {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 2cqw;
-}
-.logo-svg {
-  height: 2.55cqw;
-  width: 15cqw;
-  display: block;
-}
-.is-dark .logo-svg {
-  color: #fff;
-}
-.is-light .logo-svg {
-  color: var(--ink);
-}
-
-.meta {
-  font-family: var(--mono);
-  font-size: 1.02cqw;
-  font-weight: 500;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-}
-.is-dark .meta {
-  color: var(--mut-d);
-}
-.is-light .meta {
-  color: var(--mut-l);
-}
-
-.foot {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 2cqw;
-  font-family: var(--mono);
-  font-size: 0.86cqw;
-  font-weight: 500;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-}
-.is-dark .foot {
-  color: rgba(207, 174, 237, 0.5);
-}
-.is-light .foot {
-  color: rgba(44, 15, 68, 0.4);
-}
-.foot span:nth-child(2) {
-  flex: 1;
-  text-align: center;
-}
-.foot span:last-child {
-  text-align: right;
-}
-
-.body {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  min-height: 0;
-}
-.body.top {
-  justify-content: flex-start;
-}
-
-/* ---------- type ---------- */
+/* ---------- typography (used in slide bodies + components; themed by tone across the slot boundary) ---------- */
 .eyebrow {
   font-family: var(--mono);
   font-size: 1.04cqw;
@@ -131,7 +62,6 @@ body {
 .is-light .eyebrow {
   color: var(--mut-l);
 }
-
 h1,
 h2 {
   font-family: var(--display);
@@ -150,7 +80,6 @@ h2 {
 .accent {
   color: var(--yellow);
 }
-
 .lede {
   font-size: 1.55cqw;
   line-height: 1.5;
@@ -164,19 +93,7 @@ h2 {
   color: var(--mut-d);
 }
 
-/* split header used on content slides */
-.head-split {
-  display: grid;
-  grid-template-columns: 1.04fr 0.96fr;
-  gap: 3cqw;
-  align-items: center;
-}
-.head-split .lede {
-  max-width: none;
-  padding-bottom: 0.4cqw;
-}
-
-/* ---------- cards ---------- */
+/* ---------- base card pattern (shared by the card components) ---------- */
 .cards {
   display: grid;
   gap: 1.5cqw;
@@ -188,7 +105,6 @@ h2 {
 .c4 {
   grid-template-columns: repeat(4, 1fr);
 }
-
 .card {
   background: var(--card);
   border-radius: 1.5cqw;
@@ -198,257 +114,11 @@ h2 {
   display: flex;
   flex-direction: column;
 }
-.card.feature {
-  background: var(--ink);
-  border-color: transparent;
-  color: #fff;
-  box-shadow: 0 30px 60px -28px rgba(44, 15, 68, 0.6);
-}
-
-.clabel {
-  font-family: var(--mono);
-  font-size: 0.92cqw;
-  font-weight: 600;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
-  color: var(--mut-l);
-  line-height: 1.35;
-}
-.feature .clabel {
-  color: var(--yellow);
-}
-
-.stat {
-  font-family: var(--display);
-  font-weight: 600;
-  font-size: 5.2cqw;
-  line-height: 1;
-  letter-spacing: -0.02em;
-  margin: 0.2cqw 0 1.2cqw;
-}
-.feature .stat {
-  color: var(--yellow);
-}
 .csub {
   font-size: 1.12cqw;
   line-height: 1.42;
   color: var(--body-l);
   margin-top: auto;
-}
-.feature .csub {
-  color: rgba(255, 255, 255, 0.82);
-}
-
-.divider {
-  height: 1px;
-  background: var(--line-l);
-  margin: 1.3cqw 0;
-}
-.feature .divider {
-  background: rgba(255, 255, 255, 0.16);
-}
-
-.pill {
-  align-self: flex-start;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5cqw;
-  background: var(--yellow);
-  color: var(--ink);
-  font-family: var(--mono);
-  font-size: 0.86cqw;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  padding: 0.5cqw 0.9cqw;
-  border-radius: 5cqw;
-  margin-bottom: 1.1cqw;
-}
-.pill .dot {
-  width: 0.6cqw;
-  height: 0.6cqw;
-  border-radius: 50%;
-  background: var(--ink);
-}
-
-/* numbered cards (approach) */
-.num-card .top {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 2.6cqw;
-}
-.num-card .kicker {
-  font-family: var(--mono);
-  font-size: 0.92cqw;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--mut-l);
-}
-.badge {
-  width: 2.7cqw;
-  height: 2.7cqw;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--mono);
-  font-weight: 600;
-  font-size: 1.05cqw;
-  background: var(--ink);
-  color: #fff;
-}
-.badge.y {
-  background: var(--yellow);
-  color: var(--ink);
-}
-.num-card .ct {
-  font-family: var(--display);
-  font-weight: 600;
-  font-size: 1.95cqw;
-  line-height: 1.05;
-  margin-bottom: 0.9cqw;
-}
-.num-card .csub {
-  margin-top: 0;
-}
-
-/* skip cards */
-.skip-card {
-  border-style: dashed;
-  border-color: rgba(44, 15, 68, 0.18);
-  background: rgba(255, 255, 255, 0.55);
-  box-shadow: none;
-}
-.skip-card .xmark {
-  width: 2.5cqw;
-  height: 2.5cqw;
-  border-radius: 50%;
-  border: 1.4px solid rgba(44, 15, 68, 0.35);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--mut-l);
-  font-size: 1.3cqw;
-  margin-bottom: 1.6cqw;
-}
-.skip-card .ct {
-  font-family: var(--display);
-  font-weight: 600;
-  font-size: 1.85cqw;
-  line-height: 1.08;
-  margin-bottom: 0.8cqw;
-  color: rgba(44, 15, 68, 0.78);
-}
-.skip-card .csub {
-  margin-top: 0;
-}
-
-/* ---------- editorial numbered rows (ops ideas) ---------- */
-.rows {
-  margin-top: 1.5cqw;
-  display: flex;
-  flex-direction: column;
-}
-.rows.two {
-  display: grid;
-  grid-auto-flow: column;
-  grid-template-rows: repeat(3, auto);
-  column-gap: 5.5cqw;
-  align-content: start;
-  margin-top: 1.9cqw;
-}
-.rows.two .row {
-  border-bottom: none;
-}
-.rows.two .rd {
-  max-width: none;
-}
-.row {
-  display: grid;
-  grid-template-columns: 5cqw 1fr;
-  gap: 2.4cqw;
-  align-items: baseline;
-  padding: 0.98cqw 0;
-  border-top: 1px solid var(--line-l);
-}
-.row:last-child {
-  border-bottom: 1px solid var(--line-l);
-}
-.row .rn {
-  font-family: var(--display);
-  font-weight: 600;
-  font-size: 2.6cqw;
-  line-height: 1;
-  color: rgba(44, 15, 68, 0.22);
-}
-.row.lead .rn {
-  color: var(--yellow);
-}
-.row .rt {
-  font-family: var(--display);
-  font-weight: 600;
-  font-size: 1.78cqw;
-  line-height: 1.05;
-  margin-bottom: 0.45cqw;
-}
-.row .rd {
-  font-size: 1.18cqw;
-  line-height: 1.45;
-  color: var(--body-l);
-  max-width: 64cqw;
-}
-.row .grid2 {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 0;
-}
-
-/* ---------- dark checklist (close) ---------- */
-.asks {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.1cqw 3.4cqw;
-  margin-top: 3cqw;
-}
-.ask {
-  display: grid;
-  grid-template-columns: 2.5cqw 1fr;
-  gap: 1.4cqw;
-  align-items: start;
-  padding: 0.7cqw 0;
-}
-.ask .an {
-  width: 2.5cqw;
-  height: 2.5cqw;
-  border-radius: 50%;
-  background: var(--yellow);
-  color: var(--ink);
-  font-family: var(--mono);
-  font-weight: 700;
-  font-size: 1cqw;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: none;
-}
-.ask .ad {
-  font-size: 1.28cqw;
-  line-height: 1.4;
-  color: rgba(255, 255, 255, 0.9);
-  padding-top: 0.35cqw;
-}
-.ask .ad b {
-  color: #fff;
-  font-weight: 600;
-}
-.close-line {
-  margin-top: 3cqw;
-  font-size: 1.5cqw;
-  line-height: 1.5;
-  color: var(--lilac);
-  max-width: 62cqw;
 }
 
 /* ---------- print ---------- */
