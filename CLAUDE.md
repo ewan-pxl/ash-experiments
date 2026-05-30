@@ -12,17 +12,24 @@ Post-Click OS home, with three areas beneath it. The root `/` and every unknown 
 
 The shell is now an internal hub, not just a hidden list. Routing is client-side in `src/App.vue`:
 
-- `/home` → **Launcher** (`LauncherView.vue`) — three cards: Experiments · Wiki · Branding.
-- `/home/experiments` and `/home/experiments/<folder>` → the **experiments index** (`IndexView.vue`,
-  folders / projects / tags). This is where the page list used to live at `/home`; it moved down one
-  level so the launcher can own `/home`. Live page URLs are unchanged (`/<folder>/<slug>-NNN/`).
+- `/home` → **Launcher** (`LauncherView.vue`) — cards for the four areas below.
+- `/home/experiments[/<folder>]` → **Experiments** (`IndexView.vue` with `kind="experiment"`).
+  *In the business* — the delivery workbench (concepts → designers). Folders / projects / tags.
+- `/home/agency[/<folder>]` → **Agency** (`IndexView.vue` with `kind="agency"`).
+  *On the business* — proposals, reporting, internal decks, marketing material. Same browser UI.
 - `/home/wiki` → **Wiki** (`WikiView.vue`), read-only render of the sibling **pxl-postclick-os** repo.
-- `/home/branding` → **Branding** (`BrandingView.vue`), read-only gallery of the sibling **branding** repo.
+- `/home/assets` → **Assets** (`AssetsView.vue`), read-only gallery of the sibling **branding** repo
+  (the area is called "Assets"; the source repo is still named `branding`).
+
+**Experiments vs Agency is set per page by `meta.json` `kind`** (`"experiment"` or `"agency"`;
+defaults to `experiment`). Both areas share the exact same folder/project/tag browser — the page-list
+helpers in `pages.js` take `kind` as their first arg and scope to it, so the two never mix. Live page
+URLs are unchanged either way (`/<folder>/<slug>-NNN/`).
 
 The two sibling repos (`../pxl-postclick-os`, `../branding`) are read at build/serve time by the
-`postclickData()` plugin in `vite.config.js` and exposed as `virtual:postclick-data`. They are
-**read-only sources** — never write to them from here. Building pages is unaffected by all of this;
-the recipe below still applies and the experiments index still picks up `meta.json` automatically.
+`postclickData()` plugin in `vite.config.js` and exposed as `virtual:postclick-data` (with a fallback
+to the committed `./content` snapshot — run `npm run sync-content` before deploy). They are
+**read-only sources** — never write to them from here. Building pages is unaffected by all of this.
 
 ---
 
@@ -149,6 +156,7 @@ createApp(App).mount('#app')
 ```json
 {
   "id": 2,
+  "kind": "experiment",
   "name": "Human Readable Name",
   "description": "One sentence describing it — shown on the index.",
   "folder": "",
@@ -159,6 +167,9 @@ createApp(App).mount('#app')
 }
 ```
 - `id`: the integer form of `NNN` (no leading zeros, e.g. `7` for `-007`).
+- `kind`: which work area the page lives in — `"experiment"` (in the business: delivery
+  workbench — default) or `"agency"` (on the business: proposals, reporting, internal decks).
+  When unsure, default to `experiment`; ask which area if it's genuinely ambiguous.
 - `folder`: optional URL folder, slash-separated kebab-case (e.g. `"games"` or `"tools/text"`).
   Empty string = root. Sets the live path: `/<folder>/<slug>-NNN/`.
 - `project`: optional kebab-case project name (e.g. `"pixel-theory"`). Empty = no project. Orthogonal

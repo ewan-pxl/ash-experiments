@@ -1,9 +1,12 @@
 {
   "id": 1,
+  "kind": "experiment",
   "name": "Welcome",
   "description": "It works — a demo of an isolated page that explains how this place is put together.",
   "folder": "test",
-  "tags": ["test"],
+  "tags": [
+    "test"
+  ],
   "created": "2026-05-29",
   "updated": "2026-05-29"
 }

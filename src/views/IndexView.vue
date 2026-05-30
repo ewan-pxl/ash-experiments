@@ -2,7 +2,7 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import PageCard from '../components/PageCard.vue'
 import {
-  pages,
+  pagesOf,
   subfolders,
   pagesInFolder,
   folderCrumbs,
@@ -14,26 +14,41 @@ import {
   resolveFolder,
   resolveProject,
   tagHue,
-  EXPERIMENTS_BASE,
+  AREAS,
+  baseForKind,
 } from '../pages.js'
 
-// Decode the URL into {tab, folder, project}.
-//   /home                  → folder browser at root (default)
-//   /home/<folder>         → folder browser at that folder
-//   /home?project          → projects browser (root = list of projects)
-//   /home?project=<name>   → that project's pages
+// This view renders one work area (Experiments or Agency). All browsing is
+// scoped to the area's `kind`, and links sit under the area's base path.
+const props = defineProps({
+  kind: { type: String, default: 'experiment' },
+})
+const base = baseForKind(props.kind)
+const areaLabel = (AREAS[props.kind] || AREAS.experiment).label
+// Pages in this area only.
+const areaPages = computed(() => pagesOf(props.kind))
+
+// Decode the URL into {tab, folder, project}, relative to this area's base.
+//   <base>                  → folder browser at root (default)
+//   <base>/<folder>         → folder browser at that folder
+//   <base>?project          → projects browser (root = list of projects)
+//   <base>?project=<name>   → that project's pages
 function parseLocation() {
   const params = new URLSearchParams(window.location.search)
   if (params.has('tags')) {
     return { tab: 'tags', folder: '', project: '' }
   }
   if (params.has('project')) {
-    return { tab: 'projects', folder: '', project: resolveProject((params.get('project') || '').trim()) }
+    return {
+      tab: 'projects',
+      folder: '',
+      project: resolveProject(props.kind, (params.get('project') || '').trim()),
+    }
   }
   const path = window.location.pathname.replace(/\/+$/, '')
-  if (path.startsWith(EXPERIMENTS_BASE + '/')) {
+  if (path.startsWith(base + '/')) {
     const urlFolder = path
-      .slice((EXPERIMENTS_BASE + '/').length)
+      .slice((base + '/').length)
       .split('/')
       .map((s) => {
         try {
@@ -46,7 +61,7 @@ function parseLocation() {
       .filter(Boolean)
       .join('/')
     // URL may be slugged or cased differently — map back to the real folder.
-    return { tab: 'folder', folder: resolveFolder(urlFolder), project: '' }
+    return { tab: 'folder', folder: resolveFolder(props.kind, urlFolder), project: '' }
   }
   return { tab: 'folder', folder: '', project: '' }
 }
@@ -65,16 +80,16 @@ const tagQuery = computed(() => {
   return m ? m[1].trim().toLowerCase() : null
 })
 
-// Flat list/search is scoped to the current folder subtree or project.
+// Flat list/search is scoped to the current folder subtree or project (within the area).
 const scope = computed(() => {
-  if (tab.value === 'projects' && project.value) return pagesInProject(project.value)
-  if (tab.value === 'folder' && folder.value) return pagesInSubtree(folder.value)
-  return pages
+  if (tab.value === 'projects' && project.value) return pagesInProject(props.kind, project.value)
+  if (tab.value === 'folder' && folder.value) return pagesInSubtree(props.kind, folder.value)
+  return areaPages.value
 })
 const filtered = computed(() => {
   if (tagQuery.value !== null) {
     const tg = tagQuery.value
-    return pages.filter((p) => p.tags.includes(tg)) // exact tag, global
+    return areaPages.value.filter((p) => p.tags.includes(tg)) // exact tag, across this area
   }
   const q = query.value.trim().toLowerCase()
   if (!q) return scope.value
@@ -101,20 +116,20 @@ const scopeTags = computed(() => {
 const topTags = computed(() => scopeTags.value.slice(0, 5))
 const hasMoreTags = computed(() => scopeTags.value.length > 5)
 
-// Every tag across all pages (for the Tags tab).
+// Every tag across this area (for the Tags tab).
 const allTags = computed(() => {
   const counts = new Map()
-  for (const p of pages) for (const t of p.tags) counts.set(t, (counts.get(t) || 0) + 1)
+  for (const p of areaPages.value) for (const t of p.tags) counts.set(t, (counts.get(t) || 0) + 1)
   return [...counts.entries()]
     .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
     .map(([tag, count]) => ({ tag, count }))
 })
 
-const subs = computed(() => subfolders(folder.value))
-const here = computed(() => pagesInFolder(folder.value))
-const crumbs = computed(() => folderCrumbs(folder.value))
-const allProjects = computed(() => projectList())
-const projectPages = computed(() => pagesInProject(project.value))
+const subs = computed(() => subfolders(props.kind, folder.value))
+const here = computed(() => pagesInFolder(props.kind, folder.value))
+const crumbs = computed(() => folderCrumbs(props.kind, folder.value))
+const allProjects = computed(() => projectList(props.kind))
+const projectPages = computed(() => pagesInProject(props.kind, project.value))
 
 // "Drilled in" = inside a specific folder or project (a breadcrumb is shown to get back out).
 const drilledIn = computed(
@@ -129,16 +144,16 @@ function setTitle() {
         ? project.value || 'Projects'
         : tab.value === 'folder' && folder.value
           ? folder.value
-          : 'Index'
+          : areaLabel
 }
 
 // --- client-side nav (page links stay real full-page loads) ---
 const stateFor = (t, f, p) => ({ idx: true, tab: t, folder: f, project: p })
 const urlFor = (t, f, p) => {
-  // Only the "drilled-in" states get a query/path; tab roots are just /home.
-  if (t === 'projects' && p) return projectHref(p)
-  if (t === 'folder' && f) return folderHref(f)
-  return EXPERIMENTS_BASE
+  // Only the "drilled-in" states get a query/path; tab roots are just the area base.
+  if (t === 'projects' && p) return projectHref(props.kind, p)
+  if (t === 'folder' && f) return folderHref(props.kind, f)
+  return base
 }
 function go(t, f = '', p = '') {
   tab.value = t
@@ -193,11 +208,11 @@ onBeforeUnmount(() => window.removeEventListener('popstate', onPop))
   <main class="index">
     <a href="/home" class="os-back">← Post-Click OS</a>
     <header class="index-head">
-      <h1>Experiments</h1>
-      <span class="count">{{ pages.length }} {{ pages.length === 1 ? 'page' : 'pages' }}</span>
+      <h1>{{ areaLabel }}</h1>
+      <span class="count">{{ areaPages.length }} {{ areaPages.length === 1 ? 'page' : 'pages' }}</span>
     </header>
 
-    <div v-if="pages.length" class="search-wrap">
+    <div v-if="areaPages.length" class="search-wrap">
       <input
         v-model="query"
         type="search"
@@ -216,7 +231,7 @@ onBeforeUnmount(() => window.removeEventListener('popstate', onPop))
       </button>
     </div>
 
-    <div v-if="pages.length && !searching && tab !== 'tags' && topTags.length" class="tag-row">
+    <div v-if="areaPages.length && !searching && tab !== 'tags' && topTags.length" class="tag-row">
       <button
         v-for="t in topTags"
         :key="t.tag"
@@ -238,7 +253,7 @@ onBeforeUnmount(() => window.removeEventListener('popstate', onPop))
       </button>
     </div>
 
-    <div v-if="pages.length && !searching && !drilledIn" class="tabs">
+    <div v-if="areaPages.length && !searching && !drilledIn" class="tabs">
       <button type="button" class="tab" :class="{ active: tab === 'folder' }" @click="go('folder')">
         Folder
       </button>
@@ -258,7 +273,7 @@ onBeforeUnmount(() => window.removeEventListener('popstate', onPop))
       </button>
     </div>
 
-    <p v-if="!pages.length" class="empty">Nothing here yet.</p>
+    <p v-if="!areaPages.length" class="empty">Nothing here yet.</p>
 
     <!-- FLAT LIST (List tab, or any active search) -->
     <template v-else-if="searching || tab === 'list'">
@@ -280,7 +295,7 @@ onBeforeUnmount(() => window.removeEventListener('popstate', onPop))
     <!-- FOLDER BROWSER -->
     <template v-else-if="tab === 'folder'">
       <nav v-if="folder" class="breadcrumb">
-        <a :href="EXPERIMENTS_BASE" @click="clickNav($event, 'folder', '')">root</a>
+        <a :href="base" @click="clickNav($event, 'folder', '')">root</a>
         <template v-for="(c, i) in crumbs" :key="c.href">
           <span class="sep">/</span>
           <a v-if="i < crumbs.length - 1" :href="c.href" @click="clickNav($event, 'folder', c.folder)">{{
@@ -331,7 +346,7 @@ onBeforeUnmount(() => window.removeEventListener('popstate', onPop))
       <!-- a specific project: just its pages -->
       <template v-if="project">
         <nav class="breadcrumb">
-          <a :href="EXPERIMENTS_BASE" @click="clickNav($event, 'projects', '', '')">projects</a>
+          <a :href="base" @click="clickNav($event, 'projects', '', '')">projects</a>
           <span class="sep">/</span>
           <span class="current">{{ project }}</span>
         </nav>

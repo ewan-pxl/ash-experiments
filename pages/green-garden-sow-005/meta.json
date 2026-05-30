@@ -1,10 +1,15 @@
 {
   "id": 5,
+  "kind": "agency",
   "name": "Green Garden — Statement of Work",
   "description": "A working Pixel Theory SOW deck for Green Garden (Ferry Morse + McKenzie Seeds): scope, timeline, and investment.",
   "folder": "Statement of Works",
   "project": "PXL decks",
-  "tags": ["deck", "sow", "client"],
+  "tags": [
+    "deck",
+    "sow",
+    "client"
+  ],
   "created": "2026-05-29",
   "updated": "2026-05-30"
 }

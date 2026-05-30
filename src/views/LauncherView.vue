@@ -1,21 +1,32 @@
 <script setup>
-import { pages } from '../pages.js'
+import { pagesOf } from '../pages.js'
 import { wiki, branding } from 'virtual:postclick-data'
 import PtLogo from '../components/PtLogo.vue'
 
-// The three areas of the OS, with a live count pulled from each source.
-const experiments = pages.length
+// Live counts per area.
+const experiments = pagesOf('experiment').length
+const agency = pagesOf('agency').length
 const docs = wiki.docs.length
 const brands = branding.brands.length
+const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`
 
+// Two work areas (where work happens), then two reference areas (what you pull from).
 const cards = [
   {
     key: 'experiments',
     title: 'Experiments',
     href: '/home/experiments',
     icon: 'science',
-    desc: 'Every Ash experiment page — browse by folder, project or tag.',
-    meta: `${experiments} ${experiments === 1 ? 'page' : 'pages'}`,
+    desc: 'In the business — the delivery workbench. Ideate concepts against a brand, hand designers something real.',
+    meta: plural(experiments, 'page', 'pages'),
+  },
+  {
+    key: 'agency',
+    title: 'Agency',
+    href: '/home/agency',
+    icon: 'corporate_fare',
+    desc: 'On the business — proposals, reporting, internal decks and marketing material.',
+    meta: plural(agency, 'page', 'pages'),
   },
   {
     key: 'wiki',
@@ -23,15 +34,15 @@ const cards = [
     href: '/home/wiki',
     icon: 'menu_book',
     desc: 'The Post-Click knowledge base: positioning, methodology, delivery, sales.',
-    meta: wiki.present ? `${docs} ${docs === 1 ? 'doc' : 'docs'}` : 'source not found',
+    meta: wiki.present ? plural(docs, 'doc', 'docs') : 'source not found',
   },
   {
-    key: 'branding',
-    title: 'Branding',
-    href: '/home/branding',
+    key: 'assets',
+    title: 'Assets',
+    href: '/home/assets',
     icon: 'palette',
-    desc: 'Brand assets on file — logos, colours, type and imagery, per client.',
-    meta: branding.present ? `${brands} ${brands === 1 ? 'brand' : 'brands'}` : 'source not found',
+    desc: 'The asset library — logos, colours, type, fonts and imagery, per brand.',
+    meta: branding.present ? plural(brands, 'brand', 'brands') : 'source not found',
   },
 ]
 </script>
@@ -41,7 +52,7 @@ const cards = [
     <header class="launch-head">
       <PtLogo class="launch-logo" />
       <h1>Post-Click OS</h1>
-      <p class="tagline">Pixel Theory's internal home — experiments, the wiki, and brand assets, all in one place.</p>
+      <p class="tagline">Pixel Theory's internal home — experiments, agency work, the wiki, and assets, all in one place.</p>
     </header>
 
     <ul class="launch-grid">
@@ -125,11 +136,15 @@ const cards = [
   background: var(--accent-soft);
   color: var(--accent);
 }
+.launch-card.agency .launch-icon {
+  background: rgba(44, 15, 68, 0.08);
+  color: var(--ink);
+}
 .launch-card.wiki .launch-icon {
   background: var(--good-soft);
   color: var(--good);
 }
-.launch-card.branding .launch-icon {
+.launch-card.assets .launch-icon {
   background: rgba(254, 194, 0, 0.18);
   color: #b58800;
 }

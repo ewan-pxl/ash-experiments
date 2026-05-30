@@ -1,10 +1,15 @@
 {
   "id": 4,
+  "kind": "agency",
   "name": "How We'd Approach Heirloom",
   "description": "A 7-slide Pixel Theory new-business deck outlining the approach for Heirloom Coffee Roasters.",
   "folder": "Proposals",
   "project": "PXL decks",
-  "tags": ["deck", "pitch", "client"],
+  "tags": [
+    "deck",
+    "pitch",
+    "client"
+  ],
   "created": "2026-05-29",
   "updated": "2026-05-29"
 }

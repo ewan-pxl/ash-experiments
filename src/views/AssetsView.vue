@@ -54,8 +54,8 @@ onBeforeUnmount(() => {
   <div class="brand-page">
     <aside class="brand-nav">
       <a href="/home" class="os-back">← Post-Click OS</a>
-      <h2 class="brand-brand">Branding</h2>
-      <p v-if="!branding.present" class="empty">Branding repo not found on disk.</p>
+      <h2 class="brand-brand">Assets</h2>
+      <p v-if="!branding.present" class="empty">Asset library not found on disk.</p>
       <p v-else-if="!brands.length" class="empty">No brands yet.</p>
       <nav v-else class="brand-list">
         <button

@@ -1,6 +1,20 @@
 // Shared page index for the shell's list + folder views. Pages are discovered
 // from their meta.json at build time; folder is virtual (URL-only).
+//
+// Pages belong to one of two work areas, set by their meta.json `kind`:
+//   experiment → Experiments (in the business: the delivery workbench)
+//   agency     → Agency (on the business: proposals, reporting, internal decks)
+// The folder / project / tag browser is identical in both; it's just scoped to
+// the area's pages and links under the area's base path. The scoped helpers take
+// `kind` as their first argument so the two areas never bleed into each other.
 const modules = import.meta.glob('/pages/*/meta.json', { eager: true })
+
+// The two work areas. base = URL prefix; label = heading.
+export const AREAS = {
+  experiment: { base: '/home/experiments', label: 'Experiments' },
+  agency: { base: '/home/agency', label: 'Agency' },
+}
+export const baseForKind = (kind) => (AREAS[kind] || AREAS.experiment).base
 
 // Raw folder path kept for display ("Statement of Works"); whitespace tidied,
 // case/spaces preserved.
@@ -40,6 +54,8 @@ export const pages = Object.entries(modules)
     return {
       slug,
       id: meta.id ?? 0,
+      // Which work area this page belongs to. Defaults to experiment.
+      kind: meta.kind === 'agency' ? 'agency' : 'experiment',
       name: meta.name ?? slug,
       description: meta.description ?? '',
       folder: normalizeFolder(meta.folder),
@@ -53,38 +69,38 @@ export const pages = Object.entries(modules)
   })
   .sort((a, b) => b.id - a.id)
 
+// Pages in a given work area (kind), newest first.
+export const pagesOf = (kind) => pages.filter((p) => p.kind === kind)
+
 // Canonical public path of a page (slugged folder), e.g. /games/arcade/snake-007.
+// Unaffected by area — live page URLs are flat and never under /home.
 export const pagePath = (p) => '/' + [slugifyPath(p.folder), p.slug].filter(Boolean).join('/')
 
 // Live href — the clean public path, identical in dev and prod (a dev middleware
 // maps these URLs onto the on-disk /pages/<slug>/ files).
 export const pageHref = (p) => pagePath(p) + '/'
 
-// The experiments browser lives under /home/experiments (the bare /home root is
-// the Post-Click OS launcher). Live page URLs are unaffected — pages still serve
-// at /<folder>/<slug>/; only the hidden index's own browsing URLs sit here.
-export const EXPERIMENTS_BASE = '/home/experiments'
-
-// Index link to a folder view (root list when folder is empty); always slugged.
-export const folderHref = (folder) =>
-  EXPERIMENTS_BASE + (folder ? '/' + slugifyPath(folder) : '')
+// Index link to a folder view within an area (root list when folder is empty).
+export const folderHref = (kind, folder) =>
+  baseForKind(kind) + (folder ? '/' + slugifyPath(folder) : '')
 
 // Clickable breadcrumb segments for a folder path — raw label, slugged href.
-export const folderCrumbs = (folder) =>
+export const folderCrumbs = (kind, folder) =>
   folder
     ? folder.split('/').map((seg, i, arr) => {
         const raw = arr.slice(0, i + 1).join('/')
-        return { label: seg, folder: raw, href: folderHref(raw) }
+        return { label: seg, folder: raw, href: folderHref(kind, raw) }
       })
     : []
 
-// Direct child folders within `folder` (next path segment), with subtree counts.
-// Grouped by slug (so casing/spacing variants merge), displayed with the raw name.
-export function subfolders(folder) {
+// Direct child folders within `folder` for an area (next path segment), with
+// subtree counts. Grouped by slug (so casing/spacing variants merge), shown raw.
+export function subfolders(kind, folder) {
+  const scope = pagesOf(kind)
   const baseDepth = slugifyPath(folder) ? slugifyPath(folder).split('/').length : 0
   const rawBySlug = new Map()
   const fullBySlug = new Map()
-  for (const p of pages) {
+  for (const p of scope) {
     if (!p.folder || !inSubtree(p, folder)) continue
     const rawSegs = p.folder.split('/')
     if (rawSegs.length <= baseDepth) continue
@@ -98,23 +114,23 @@ export function subfolders(folder) {
     .map((cs) => {
       const name = rawBySlug.get(cs)
       const full = fullBySlug.get(cs)
-      const inside = pages.filter((p) => inSubtree(p, full))
+      const inside = scope.filter((p) => inSubtree(p, full))
       const updated = inside.reduce((m, p) => (p.updated > m ? p.updated : m), '')
-      return { name, full, count: inside.length, updated, href: folderHref(full) }
+      return { name, full, count: inside.length, updated, href: folderHref(kind, full) }
     })
     .sort((a, b) => b.updated.localeCompare(a.updated) || a.name.localeCompare(b.name))
 }
 
-// Pages located directly in `folder`; and the whole subtree (for scope/search).
-export const pagesInFolder = (folder) => pages.filter((p) => directlyIn(p, folder))
-export const pagesInSubtree = (folder) => pages.filter((p) => inSubtree(p, folder))
+// Pages directly in `folder`; and the whole subtree (for scope/search) — within an area.
+export const pagesInFolder = (kind, folder) => pagesOf(kind).filter((p) => directlyIn(p, folder))
+export const pagesInSubtree = (kind, folder) => pagesOf(kind).filter((p) => inSubtree(p, folder))
 
-// Map a (possibly slugged/cased) URL folder back to a real raw folder path.
-export function resolveFolder(slugPath) {
+// Map a (possibly slugged/cased) URL folder back to a real raw folder path, within an area.
+export function resolveFolder(kind, slugPath) {
   const target = slugifyPath(slugPath)
   if (!target) return ''
   const depth = target.split('/').length
-  for (const p of pages) {
+  for (const p of pagesOf(kind)) {
     if (!p.folder) continue
     const sp = slugifyPath(p.folder)
     if (sp === target || sp.startsWith(target + '/')) {
@@ -125,33 +141,33 @@ export function resolveFolder(slugPath) {
 }
 
 // ---- projects (sharing groups; orthogonal to folders) ----
-export const projectHref = (name) =>
-  EXPERIMENTS_BASE + '?project=' + (name ? encodeURIComponent(slugifySeg(name)) : '')
+export const projectHref = (kind, name) =>
+  baseForKind(kind) + '?project=' + (name ? encodeURIComponent(slugifySeg(name)) : '')
 
-export const pagesInProject = (name) =>
-  pages.filter((p) => p.project && slugifySeg(p.project) === slugifySeg(name))
+export const pagesInProject = (kind, name) =>
+  pagesOf(kind).filter((p) => p.project && slugifySeg(p.project) === slugifySeg(name))
 
-// All projects, most recently updated first (grouped by slug, raw name shown).
-export function projectList() {
+// All projects in an area, most recently updated first (grouped by slug, raw name shown).
+export function projectList(kind) {
   const rawBySlug = new Map()
-  for (const p of pages) {
+  for (const p of pagesOf(kind)) {
     if (!p.project) continue
     const ps = slugifySeg(p.project)
     if (!rawBySlug.has(ps)) rawBySlug.set(ps, p.project)
   }
   return [...rawBySlug.values()]
     .map((name) => {
-      const inside = pagesInProject(name)
+      const inside = pagesInProject(kind, name)
       const updated = inside.reduce((m, p) => (p.updated > m ? p.updated : m), '')
-      return { name, count: inside.length, updated, href: projectHref(name) }
+      return { name, count: inside.length, updated, href: projectHref(kind, name) }
     })
     .sort((a, b) => b.updated.localeCompare(a.updated) || a.name.localeCompare(b.name))
 }
 
-// Map a (slugged/cased) URL project back to its real raw name.
-export function resolveProject(slug) {
+// Map a (slugged/cased) URL project back to its real raw name, within an area.
+export function resolveProject(kind, slug) {
   const target = slugifySeg(slug)
-  for (const p of pages) if (p.project && slugifySeg(p.project) === target) return p.project
+  for (const p of pagesOf(kind)) if (p.project && slugifySeg(p.project) === target) return p.project
   return slug
 }
 

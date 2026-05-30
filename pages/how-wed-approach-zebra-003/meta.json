@@ -1,10 +1,15 @@
 {
   "id": 3,
+  "kind": "agency",
   "name": "How We'd Approach Zebra",
   "description": "A 7-slide Pixel Theory new-business deck outlining the approach for Zebra.",
   "folder": "Proposals",
   "project": "PXL decks",
-  "tags": ["deck", "pitch", "client"],
+  "tags": [
+    "deck",
+    "pitch",
+    "client"
+  ],
   "created": "2026-05-29",
   "updated": "2026-05-29"
 }

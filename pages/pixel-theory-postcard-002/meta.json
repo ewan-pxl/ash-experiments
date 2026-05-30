@@ -1,9 +1,12 @@
 {
   "id": 2,
+  "kind": "experiment",
   "name": "I ♥ Pixel Theory Postcard",
   "description": "A flippable pixel-art postcard that says I love pixel theory.",
   "folder": "test",
-  "tags": ["test"],
+  "tags": [
+    "test"
+  ],
   "created": "2026-05-29",
   "updated": "2026-05-29"
 }

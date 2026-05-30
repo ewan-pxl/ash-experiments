@@ -27,7 +27,7 @@ function navProject(e) {
 <template>
   <li class="card">
     <p v-if="showFolder && page.folder" class="crumb">
-      <span v-for="(c, i) in folderCrumbs(page.folder)" :key="c.href">
+      <span v-for="(c, i) in folderCrumbs(page.kind, page.folder)" :key="c.href">
         <a :href="c.href" @click="navFolder($event, c.folder)">{{ c.label }}</a
         ><span v-if="i < page.folder.split('/').length - 1" class="sep"> / </span>
       </span>
@@ -54,7 +54,7 @@ function navProject(e) {
       <span class="card-meta">
         <a
           v-if="showProject && page.project"
-          :href="projectHref(page.project)"
+          :href="projectHref(page.kind, page.project)"
           class="project-badge"
           @click="navProject"
           >{{ page.project }}</a
