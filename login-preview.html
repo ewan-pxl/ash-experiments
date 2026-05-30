@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
+  <title>Post-Click OS — login preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@400;600;700&family=Inter:wght@400;500;600&family=Geist+Mono:wght@500;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ============================================================
+       MOCKUP of the Cloudflare Access login page, re-skinned to the
+       Post-Click OS light theme. This is NOT the live page — it shows
+       what Cloudflare will render once the dashboard fields are set.
+       The pieces you control via the dashboard are labelled below.
+       ============================================================ */
+    :root {
+      --bg: #f6f4ef;           /* cream page  → Cloudflare "Background color" */
+      --panel: #ffffff;
+      --ink: #2c0f44;
+      --body: rgba(44, 15, 68, 0.74);
+      --muted: rgba(44, 15, 68, 0.52);
+      --border: rgba(44, 15, 68, 0.10);
+      --border-strong: rgba(44, 15, 68, 0.16);
+      --accent: #9224e9;
+      --yellow: #fec200;
+      --display: 'Funnel Display', 'Helvetica Neue', Arial, sans-serif;
+      --bodyfont: 'Inter', system-ui, sans-serif;
+      --mono: 'Geist Mono', ui-monospace, Menlo, monospace;
+      --radius: 16px;
+      --radius-sm: 10px;
+      --shadow: 0 1px 2px rgba(44, 15, 68, 0.05), 0 6px 20px rgba(44, 15, 68, 0.05);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--bodyfont);
+      -webkit-font-smoothing: antialiased;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+      padding: 3rem 1.25rem;
+    }
+
+    /* tiny caption so nobody mistakes the mockup for the real thing */
+    .ribbon {
+      position: fixed; top: 0; left: 0; right: 0;
+      padding: 0.5rem 1rem;
+      background: var(--ink); color: #fff;
+      font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.04em;
+      text-align: center;
+    }
+    .ribbon b { color: var(--yellow); font-weight: 600; }
+
+    /* ---- our custom HEADER (dashboard: "Header text") ---- */
+    .cf-header {
+      max-width: 27rem; text-align: center;
+      color: var(--body); font-size: 0.92rem; line-height: 1.55;
+    }
+    .cf-header strong { color: var(--ink); font-weight: 600; }
+
+    /* ---- the login card (Cloudflare's widget; we tint the surface) ---- */
+    .card {
+      width: min(100%, 27rem);
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 2.4rem 2.2rem 2rem;
+      text-align: center;
+    }
+    .card img.logo { height: 2.1rem; width: auto; margin-bottom: 1.6rem; }
+    .card h1 {
+      margin: 0 0 0.4rem;
+      font-family: var(--display);
+      font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em;
+      color: var(--ink);
+    }
+    .card .sub { margin: 0 0 1.6rem; color: var(--body); font-size: 0.92rem; }
+
+    /* Cloudflare's email-OTP form (rendered by Cloudflare, shown here for context) */
+    label.fld { display: block; text-align: left; margin-bottom: 1rem; }
+    label.fld span {
+      display: block; margin-bottom: 0.4rem;
+      font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    input {
+      width: 100%; padding: 0.8rem 0.9rem;
+      border: 1px solid var(--border-strong); border-radius: var(--radius-sm);
+      font-family: var(--bodyfont); font-size: 0.95rem; color: var(--ink);
+      background: #fdfcfa;
+    }
+    input:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
+    .btn {
+      width: 100%; margin-top: 0.3rem;
+      appearance: none; border: 0; cursor: pointer;
+      padding: 0.85rem 1rem; border-radius: var(--radius-sm);
+      background: var(--accent); color: #fff;
+      font-family: var(--bodyfont); font-size: 0.95rem; font-weight: 600;
+    }
+    .divider {
+      display: flex; align-items: center; gap: 0.75rem;
+      margin: 1.3rem 0 1.1rem; color: var(--muted); font-size: 0.78rem;
+    }
+    .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+    .idp {
+      width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.6rem;
+      padding: 0.8rem 1rem; border: 1px solid var(--border-strong); border-radius: var(--radius-sm);
+      background: #fff; color: var(--ink); font-size: 0.92rem; font-weight: 500; cursor: pointer;
+    }
+    .cf-note { margin: 1.4rem 0 0; font-size: 0.72rem; color: var(--muted); }
+
+    /* ---- our custom FOOTER (dashboard: "Footer text") ---- */
+    .cf-footer {
+      max-width: 27rem; text-align: center;
+      font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.03em;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="ribbon">PREVIEW — this is what Cloudflare renders once the dashboard fields are set. <b>Not live.</b></div>
+
+  <!-- HEADER (your text) -->
+  <p class="cf-header"><strong>Post-Click OS</strong> — Pixel Theory's internal home for the Post-Click team.</p>
+
+  <!-- LOGIN CARD -->
+  <div class="card">
+    <img class="logo" src="./public/login-logo.svg" alt="Pixel Theory" />
+    <h1>Sign in to Post-Click OS</h1>
+    <p class="sub">Use your <strong>@thepixeltheory.com</strong> email.</p>
+
+    <label class="fld">
+      <span>Email</span>
+      <input type="email" placeholder="you@thepixeltheory.com" />
+    </label>
+    <button class="btn">Send me a code</button>
+
+    <div class="divider">or</div>
+    <button class="idp">Sign in with Google</button>
+
+    <p class="cf-note">Protected by Cloudflare Access</p>
+  </div>
+
+  <!-- FOOTER (your text) -->
+  <p class="cf-footer">Pixel Theory · Post-Click · internal use only</p>
+</body>
+</html>
