@@ -216,23 +216,23 @@ onUnmounted(() => {
 
       <div class="cards c3">
         <div class="card">
-          <div class="clabel">Flat monthly rate</div>
-          <div class="stat">$8,000</div>
+          <div class="clabel">Both brands covered</div>
+          <div class="stat">2</div>
           <div class="divider"></div>
-          <div class="csub">Charged each month across the engagement window.</div>
+          <div class="csub">Ferry Morse and McKenzie Seeds, one engagement, one rate.</div>
         </div>
         <div class="card">
           <div class="clabel">Billing window</div>
           <div class="stat">4 mo</div>
           <div class="divider"></div>
-          <div class="csub">The window the monthly rate applies across.</div>
+          <div class="csub">The window the flat rate applies across.</div>
         </div>
         <div class="card feature">
-          <span class="pill"><span class="dot"></span>All in</span>
-          <div class="clabel">Total investment</div>
-          <div class="stat">$32,000</div>
+          <span class="pill"><span class="dot"></span>Monthly</span>
+          <div class="clabel">Flat monthly rate</div>
+          <div class="stat">$8,000</div>
           <div class="divider"></div>
-          <div class="csub">Four months at the flat monthly rate, all deliverables included.</div>
+          <div class="csub">Covers the whole team and every deliverable, billed monthly.</div>
         </div>
       </div>
     </div>
