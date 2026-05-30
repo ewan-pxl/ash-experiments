@@ -111,11 +111,9 @@ Deck Notes" (`316b4e6a-dca1-8026-9e1c-decf146df912`), "Growth & CRO Sync" meetin
 pulled 2026-05-30.*
 
 *Open questions:*
-- *Subordinate vs peer. The Apr 2026 Growth & CRO Sync describes post-click as existing "to
-  serve the Growth team", while the Services page and the Pixel Theory identity frame it as part
-  of one growth engine, a peer to media and creative. Distilled here as one engine with
-  post-click owning the after-the-click layer. Confirm the intended framing for client-facing
-  use.*
+- *(Resolved) Post-click is a **peer in one growth engine**, alongside media and creative, owning
+  the after-the-click layer (confirmed by Ash, 2026-05-30). The April Growth & CRO Sync framing of
+  post-click as existing "to serve the Growth team" is not the canonical framing.*
 - *Stale identity in Notion. The "Who are we?" page (`2a6b4e6a-dca1-8173-8ddd-c384fcb2eaf2`)
   still describes the company as "Soar With Us, a DTC Creative Growth Partner based in Leeds,
   England". That is not canonical Pixel Theory identity (US-based, remote, ~20-person, pod

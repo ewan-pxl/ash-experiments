@@ -31,7 +31,7 @@ constant velocity.
 - Upsell optimization available as a sprint swap
 - Communication: async via Slack, calls around major launches
 
-### Tier 2: Growth. $10,000 / month
+### Tier 2: Growth. $9,800 / month
 The core tier and the full post-click engine. Bi-weekly sprints with daily Shopify reads,
 deeper experiences, and the extended design system. Where most established DTC brands operate.
 
@@ -129,7 +129,7 @@ choose between in-platform and on-site split testing is summarised in `02-method
 "Post-Click Services" (`365b4e6a-dca1-81c8-ae3a-fd4fd8a7e942`), both pulled 2026-05-30.*
 
 *Open questions:*
-- *Growth tier price: the tier sections of both source docs say **$10,000**; one summary
-  bullet in the Deliverables doc says $9,800. Using $10,000. Confirm before client-facing use.*
-- *The two testing methodologies (in-platform vs Intelligems split) are referenced here but
-  belong in full in `02-methodology/`, not yet distilled.*
+- *Growth tier price is **$9,800/month** (confirmed by Ash, 2026-05-30). The $10,000 in the tier
+  headers of both source docs is stale and should be corrected in Notion.*
+- *(Resolved) The in-platform vs Intelligems split testing methodology is now distilled in full in
+  `02-methodology/testing-methods.md`.*

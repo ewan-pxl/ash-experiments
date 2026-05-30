@@ -42,7 +42,7 @@ Section recipe (this is the most contract-like shape):
 
 ## Pricing anchors (confirm before client-facing use)
 Pricing is the sales director's call (Graham). Anchors seen in the motion:
-- **Retainer tiers** live in `01-offering/offering.md`: Foundation $6,500, Growth $10,000, Turnkey $16,700 per month.
+- **Retainer tiers** live in `01-offering/offering.md`: Foundation $6,500, Growth $9,800, Turnkey $16,700 per month.
 - **The $8k trial rate.** A reduced Growth rate offered as a 3-month trial. Scope discussed: 2 landing pages a month, roughly 2 to 3 split tests live, with a larger backlog of around 8 potential tests built (4 per lander). Stipulate renegotiation after 3 months. The full built backlog is something we may keep under wraps.
 - **Fixed-window build.** Green Garden ran at $8,000 per month across a 4-month window.
 - **Project builds.** Bovita Option A $16,850, Option B $28,300.

@@ -47,7 +47,7 @@ Exception: if subscription metrics are present (subscription order share or subs
 
 **Minimum thresholds before any conclusion (all must be met):**
 - 7 days minimum runtime.
-- 25 orders minimum per variation.
+- 50 orders minimum per variation.
 - Any kill signal must be consistent for 48 hours before acting.
 
 Anything read before these thresholds is noise. A test that ran 14 hours, or has 9 orders on a variant, tells us nothing, no matter how big the delta looks.
@@ -89,6 +89,6 @@ prompt (decision framework verbatim), #postclick-mgmt (report productisation, ts
 reality check, ts 1779476871), and various split-test digest messages. All pulled 2026-05-30.*
 
 *Open questions:*
-- *Kill/ship thresholds are pulled from the automated digest's system prompt, which is the most precise written version we have but is an n8n bot config, not a human-ratified SOP. Treating it as canon. Confirm the team is happy with that, especially the 25-orders-per-variant minimum (some report messages cite 50+ orders / "$10k+ attributable revenue" as the practical bar).*
+- *The order minimum is **50 per variation** (confirmed by Ash, 2026-05-30). The n8n digest bot's system prompt still uses 25 and should be updated to 50 so the automated reads match the human bar. The rest of the kill/ship thresholds are also pulled from that bot config (the most precise written version we have) rather than a human-ratified SOP, so confirm them once and treat this doc as canon.*
 - *Runtime: the kill/ship rules use 7-day minimum to act and 14-day minimum to call a winner. One Notion test note says "run a full 14 days and until significance." These are consistent (7 to act, 14 to declare) but worth stating once, canonically, so nobody splits the difference.*
 - *Sprint test-slot counts (4/6/8 per tier in the offering) sit above what one analyst can run to conclusion at a 7-day minimum. Lucas flagged limiting to 4-8/month in a live SOW. The "tests built vs tests live" distinction (build an LP, break it into a ~4-test backlog) partly resolves this. Confirm the canonical promise: slots are tests *built/queued*, not tests *concluded* per sprint.*

@@ -28,26 +28,31 @@ the two.
   dashes).
 - Edit facts in place. Do not duplicate or fork them across docs.
 
-## Known conflicts to resolve (as of 2026-05-30)
+## Decisions log
 
-The first full distillation pass surfaced real disagreements between sources. Each is flagged in
-the relevant doc's open-questions note. Until a human settles them, say which side you are using.
+First full distillation pass: 2026-05-30. The cross-source disagreements it surfaced were settled
+by Ash the same day except where noted. Each is also flagged in the relevant doc.
 
-- **Growth tier price.** $10,000 (tier headers) vs $9,800 (one summary bullet in the Deliverables
-  doc). Using $10,000. `01-offering/offering.md`.
-- **Weekly Slack update day.** Monday/Thursday (offering + live management) vs Monday/Friday (the
-  Notion "Weekly Update" doc). Using Monday/Thursday. `03-delivery/`.
-- **Project-management tool.** Asana (QA Gameplan) vs Monday.com (Project Tracker doc), both late
-  May 2026, neither superseding the other. `03-delivery/qa.md`, `tooling.md`.
-- **One vocabulary for diagnosis.** Three overlapping sets are in use: the 6 heuristic lenses, the
-  "Four Levers", and MVIFA page scoring. Roles assigned provisionally, no canonical mapping yet.
-  `02-methodology/`.
-- **Test-conclusion bar.** Bot says 25 orders/variant; people cite 50+ orders or $10k+ revenue.
-  `02-methodology/testing-methods.md`.
-- **Positioning of post-click.** Peer layer in one engine vs "serves the Growth team". Distilled as
-  one engine, post-click owns after-the-click. `00-positioning/positioning.md`.
-- **Stale sources, do not import.** The "Soar With Us / Leeds" identity page, duplicate Nov-2025
-  SOW/template forks, and a stale onboarding intro roster (names someone who has left).
+**Settled (2026-05-30):**
+- **Growth tier price = $9,800/month.** The $10,000 in the source-doc headers is stale.
+  `01-offering/offering.md`.
+- **Weekly Slack update = Monday/Thursday.** The Notion "Weekly Update" doc's Friday label is stale.
+  `03-delivery/comms-templates.md`.
+- **Project-management tool = Monday.com** (over Asana). `03-delivery/qa.md`, `tooling.md`.
+- **Diagnosis vocabulary: keep all three, use whichever fits.** Six lenses for element diagnosis,
+  MVIFA for whole-page scoring, four levers for the hypothesis-table grouping. No single forced
+  set. `02-methodology/`.
+- **Test-conclusion bar = 50+ orders per variant.** `02-methodology/testing-methods.md`.
+- **Positioning: post-click is a peer in one growth engine,** alongside media and creative, owning
+  the after-the-click layer (not "exists to serve the Growth team"). `00-positioning/positioning.md`.
+
+Smaller open questions and known gaps are tracked in `OPEN-QUESTIONS.md`.
+
+**Stale sources, do not import:** the "Soar With Us / Leeds" identity page, duplicate Nov-2025
+SOW/template forks, and a stale onboarding intro roster (names someone who has left).
+
+**Fixes to make outside this repo:** correct the Growth price headers and the "Weekly Update" Friday
+label in Notion, and raise the n8n Intelligems digest bot's order minimum from 25 to 50.
 
 ## Index
 

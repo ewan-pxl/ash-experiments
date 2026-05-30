@@ -57,7 +57,7 @@ The discipline that keeps these patterns credible:
 
 - Hume's "nearly $12M" is 14 days measured ($2.98M) plus 55 days projected ($8.73M). The defensible number is the measured BFCM lift.
 - MASA's $5.75M and $7.85M are models on trailing-12-month sessions and a fixed LTV, not banked revenue.
-- The test program runs real thresholds: 7-day minimum, 14 days for a winner call, 25 to 50 orders per variant minimum, and confidence (P2BB) around 95%. Tests that do not clear them are not shipped, and losers (039 listicle, Vandy bundle upsell) are kept on the record.
+- The test program runs real thresholds: 7-day minimum, 14 days for a winner call, 50 orders per variant minimum, and confidence (P2BB) around 95%. Tests that do not clear them are not shipped, and losers (039 listicle, Vandy bundle upsell) are kept on the record.
 
 The reusable move: when quoting a result, say whether it is measured, estimated, or projected. The credibility of the whole section depends on it.
 

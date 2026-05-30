@@ -60,7 +60,7 @@ ship it (clear lift, becomes the new standard). Either way we log the insight.
 
 ## Placement and qualification
 
-**Tier.** Which package a brand is on: Foundation ($6,500), Growth ($10,000), or Turnkey
+**Tier.** Which package a brand is on: Foundation ($6,500), Growth ($9,800), or Turnkey
 ($16,700). Set by sprint cadence, build surface area, and how much Shopify and creative we own.
 
 **The floor.** The minimum below which structured testing can't resolve cleanly: under 25,000

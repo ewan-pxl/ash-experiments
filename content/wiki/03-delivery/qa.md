@@ -101,8 +101,7 @@ management group DM (incident 2026-05-05), and #postclick-vanman (cart-risk exam
 2026-05-30.*
 
 *Open questions:*
-- *Tool conflict: the QA Gameplan says project tracking moves to Asana; the Project Tracker doc says Monday.com.
-  Both are dated late May 2026 and neither supersedes the other on record. The QA mechanics (assignable subtasks,
-  QA gate, no-self-QA) hold regardless of which tool wins. Confirm the destination before writing it as fact.*
+- *(Resolved) Project tracking moves to **Monday.com** (confirmed 2026-05-30, over the Asana option in the QA
+  Gameplan). The QA mechanics (assignable subtasks, QA gate, no-self-QA) hold regardless of tool.*
 - *The design/dev "snag session" cadence (once per major project pre-launch plus a 30-minute weekly catch-all) is
   proposed in the Gameplan but may not yet be a standing fixture. Confirm it is running.*

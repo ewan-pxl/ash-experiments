@@ -28,8 +28,8 @@ that doc is the reference; this is the map.
 - **Slack.** Client comms and the channel the automated reports post into. Canvases per client channel.
 - **Notion.** Wiki, SOPs, briefs, the CRO labs, and the onboarding-tasks database. Project execution is moving
   out of Notion (see the QA doc note on the tracker).
-- **Project tracker.** Moving to a dedicated PM tool for real assignable subtasks and QA gating. Destination
-  unresolved on record (Asana per the QA Gameplan, Monday.com per the Project Tracker doc); see `qa.md`.
+- **Monday.com.** The project tracker, for real assignable subtasks and QA gating (chosen 2026-05-30, over the
+  Asana option floated in the QA Gameplan); see `qa.md`. Project execution is moving here out of Notion.
 - **Tally.** The onboarding form and customer surveys.
 - **GTmetrix** (site speed) and **BrowserStack** (cross-browser) for QA.
 
@@ -42,6 +42,6 @@ that doc is the reference; this is the map.
 (`collection://32cb4e6a-dca1-81fd-967b-000b71450f49`). All pulled 2026-05-30.*
 
 *Open questions:*
-- *Project-management tool is unresolved (Asana vs Monday.com). Both proposed late May 2026.*
+- *(Resolved) Project-management tool is **Monday.com** (confirmed 2026-05-30, over Asana).*
 - *Whether N8N is self-hosted or N8N Cloud, and the pinned Shopify API version, are open developer decisions in the
   Daily Vitals brief.*

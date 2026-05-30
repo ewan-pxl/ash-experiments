@@ -58,7 +58,6 @@ on the same Monday / Thursday rhythm, scheduled in the afternoon US-eastern wind
 2026-05-30.*
 
 *Open questions:*
-- *The "Weekly Update on Slack" doc labels its two templates Monday and Friday. The canonical cadence in
-  `offering.md` and the live management discussion both say Monday and Thursday. Using Monday / Thursday as
-  canonical; the second template is the "end of week" wrap-up regardless of which day it lands on. The Notion doc
-  should be corrected to match.*
+- *(Resolved) The cadence is **Monday and Thursday** (confirmed by Ash, 2026-05-30). The "Weekly Update on Slack"
+  Notion doc labels its second template Friday and should be corrected to Thursday; the template itself is the
+  "end of week" wrap-up regardless of the day.*
