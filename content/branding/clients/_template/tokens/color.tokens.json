@@ -1,0 +1,18 @@
+{
+  "color": {
+    "brand": {
+      "primary":   { "$value": "#000000", "$type": "color", "$description": "PLACEHOLDER" },
+      "secondary": { "$value": "#FFFFFF", "$type": "color", "$description": "PLACEHOLDER" },
+      "accent":    { "$value": "#000000", "$type": "color", "$description": "PLACEHOLDER" }
+    },
+    "neutral": {
+      "black": { "$value": "#000000", "$type": "color" },
+      "white": { "$value": "#FFFFFF", "$type": "color" }
+    },
+    "semantic": {
+      "text":       { "$value": "{color.neutral.black}", "$type": "color" },
+      "background":  { "$value": "{color.neutral.white}", "$type": "color" },
+      "link":        { "$value": "{color.brand.primary}", "$type": "color" }
+    }
+  }
+}

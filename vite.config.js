@@ -8,10 +8,17 @@ const root = dirname(fileURLToPath(import.meta.url))
 const pagesDir = resolve(root, 'pages')
 
 // The two sibling content repos this front-end reads from (browse-only).
-// They live next to ash-experiments in ~/Documents/GitHub/. Nothing is written
-// back — we only read — so those repos stay fully independent and untouched.
-const wikiDir = resolve(root, '..', 'pxl-postclick-os')
-const brandingDir = resolve(root, '..', 'branding')
+// Locally they live next to ash-experiments in ~/Documents/GitHub/, and we read
+// them directly so edits show instantly. On the deploy server (Cloudflare) the
+// siblings don't exist, so we fall back to the committed snapshot in ./content
+// (produced by `npm run sync-content`). Set PXL_CONTENT=vendored to force the
+// snapshot locally (used to test the deploy path). Nothing is ever written back
+// to the source repos — they stay fully independent.
+const forceVendored = process.env.PXL_CONTENT === 'vendored'
+const pickSource = (sibling, vendored) =>
+  !forceVendored && existsSync(sibling) ? sibling : vendored
+const wikiDir = pickSource(resolve(root, '..', 'pxl-postclick-os'), resolve(root, 'content', 'wiki'))
+const brandingDir = pickSource(resolve(root, '..', 'branding'), resolve(root, 'content', 'branding'))
 
 // A page's URL folder comes from its meta.json `folder` field (virtual — the
 // pages/ dir stays flat). Slugged to lowercase-dashes so the public path is clean:
@@ -141,7 +148,9 @@ function devCleanUrls() {
 // serving config, and reads the repos as-is without modifying them.
 // ---------------------------------------------------------------------------
 
-const SKIP_DIRS = new Set(['.git', 'node_modules', '.DS_Store'])
+// `_intake` is the wiki repo's raw, non-canonical Notion/Slack dump (gitignored
+// there) — never show it. The rest is normal VCS/OS noise.
+const SKIP_DIRS = new Set(['.git', 'node_modules', '.DS_Store', '_intake'])
 const IMAGE_MIME = {
   '.webp': 'image/webp',
   '.png': 'image/png',
@@ -286,7 +295,8 @@ function readBranding() {
   const clientsDir = resolve(brandingDir, 'clients')
   if (existsSync(clientsDir)) {
     for (const e of readdirSync(clientsDir, { withFileTypes: true })) {
-      if (e.isDirectory() && !SKIP_DIRS.has(e.name)) {
+      // Skip `_`-prefixed scaffolds like clients/_template — not a real brand.
+      if (e.isDirectory() && !SKIP_DIRS.has(e.name) && !e.name.startsWith('_')) {
         brands.push({ name: e.name, group: 'clients', ...readBrandDir(resolve(clientsDir, e.name)) })
       }
     }

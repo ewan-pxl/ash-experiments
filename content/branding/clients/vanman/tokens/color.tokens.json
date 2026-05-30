@@ -1,0 +1,21 @@
+{
+  "color": {
+    "brand": {
+      "primary":   { "$value": "#000000", "$type": "color", "$description": "PLACEHOLDER — confirm primary brand colour with brand source" },
+      "secondary": { "$value": "#FFFFFF", "$type": "color", "$description": "PLACEHOLDER — confirm secondary brand colour" },
+      "accent":    { "$value": "#000000", "$type": "color", "$description": "PLACEHOLDER — confirm accent colour" }
+    },
+    "neutral": {
+      "black":  { "$value": "#000000", "$type": "color" },
+      "white":  { "$value": "#FFFFFF", "$type": "color" },
+      "grey-900": { "$value": "#1A1A1A", "$type": "color", "$description": "PLACEHOLDER" },
+      "grey-500": { "$value": "#808080", "$type": "color", "$description": "PLACEHOLDER" },
+      "grey-100": { "$value": "#F2F2F2", "$type": "color", "$description": "PLACEHOLDER" }
+    },
+    "semantic": {
+      "text":       { "$value": "{color.neutral.grey-900}", "$type": "color" },
+      "background":  { "$value": "{color.neutral.white}", "$type": "color" },
+      "link":        { "$value": "{color.brand.primary}", "$type": "color" }
+    }
+  }
+}
