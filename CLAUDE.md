@@ -22,6 +22,10 @@ show a 404. There is one hidden index at `/home` that lists every page.
   `meta.json` `folder` field sets where it lives in the URL — e.g. `folder: "games/arcade"` makes
   `pages/snake-007/` go live at `/games/arcade/snake-007/`. Empty `folder` = root. To move a page,
   just change its `folder`; never move or rename the on-disk folder.
+- **The URL is always slugged.** The folder is lowercased and any spaces/punctuation collapse to
+  single dashes, so `folder: "Statement of Works"` is served at `/statement-of-works/<slug>-NNN/`.
+  The index keeps the original name for display; only the URL is slugged (and any case/spacing in a
+  link still resolves). So when you hand over a live link, **slug the folder** — don't paste it raw.
 - `/home` and the 404 live in `src/` (the "shell"). You normally never touch the shell.
 
 ```
@@ -281,8 +285,10 @@ file.
   The page is then live at:
 
   ```
-  https://pages.thepixeltheory.app/<folder>/<slug>-<NNN>/
+  https://pages.thepixeltheory.app/<folder-slugged>/<slug>-<NNN>/
   ```
 
-  (drop the `<folder>/` part if the page is at the root). **After you push, give them that exact
-  link** (with the real folder, slug, and number filled in) so they can open the deployed page.
+  `<folder-slugged>` = the folder **lowercased with spaces/punctuation turned into dashes** (e.g.
+  `"Statement of Works"` → `statement-of-works`); drop it entirely if the page is at the root. **After
+  you push, give them that exact link** (folder slugged, real slug and number) — a raw, unslugged
+  folder will 404.
