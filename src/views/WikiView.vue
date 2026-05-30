@@ -2,6 +2,7 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { marked } from 'marked'
 import { wiki } from 'virtual:postclick-data'
+import PtLogo from '../components/PtLogo.vue'
 
 // Turn a folder/file stem into a readable label: strip the leading NN- ordering
 // prefix and the extension, swap separators for spaces, Title Case it.
@@ -77,6 +78,7 @@ onBeforeUnmount(() => {
 <template>
   <div class="wiki">
     <aside class="wiki-nav">
+      <PtLogo class="os-logo" />
       <a href="/home" class="os-back">← Post-Click OS</a>
       <h2 class="wiki-brand">Wiki</h2>
       <p v-if="!wiki.present" class="empty">Knowledge base not found on disk.</p>

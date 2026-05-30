@@ -2,6 +2,7 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { marked } from 'marked'
 import { branding } from 'virtual:postclick-data'
+import PtLogo from '../components/PtLogo.vue'
 
 function prettify(s) {
   return s.replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
@@ -53,6 +54,7 @@ onBeforeUnmount(() => {
 <template>
   <div class="brand-page">
     <aside class="brand-nav">
+      <PtLogo class="os-logo" />
       <a href="/home" class="os-back">← Post-Click OS</a>
       <h2 class="brand-brand">Assets</h2>
       <p v-if="!branding.present" class="empty">Asset library not found on disk.</p>

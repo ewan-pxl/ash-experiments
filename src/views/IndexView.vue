@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import PageCard from '../components/PageCard.vue'
+import PtLogo from '../components/PtLogo.vue'
 import {
   pagesOf,
   subfolders,
@@ -206,6 +207,7 @@ onBeforeUnmount(() => window.removeEventListener('popstate', onPop))
 
 <template>
   <main class="index">
+    <PtLogo class="os-logo" />
     <a href="/home" class="os-back">← Post-Click OS</a>
     <header class="index-head">
       <h1>{{ areaLabel }}</h1>
