@@ -45,7 +45,9 @@ for (const { name, from, to } of sources) {
 }
 
 if (synced === 0) {
-  console.warn('Nothing synced — neither sibling repo was found.')
-  process.exit(1)
+  // Deploy environments (e.g. Cloudflare) don't have the sibling repos — that's
+  // expected. Keep the committed ./content snapshot and succeed so the build runs.
+  console.log('No sibling repos found — using the committed ./content snapshot (deploy env).')
+  process.exit(0)
 }
 console.log(`Done. Synced ${synced} source(s). Commit ./content to include it in the deploy.`)

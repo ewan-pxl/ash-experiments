@@ -48,7 +48,9 @@ branding/
 │   └── <client>/          ← one folder per client (lowercase-kebab)
 │       ├── README.md      ← client brand summary + provenance
 │       ├── logos/         ← logo files (svg preferred, + png fallbacks)
-│       ├── tokens/        ← design tokens (DTCG JSON) — see §5
+│       ├── tokens/        ← design tokens (DTCG JSON), split foundation/ + surface — see §5
+│       │   ├── foundation/    ← surface-agnostic: colour, typography (shared)
+│       │   └── web/           ← UX/UI application: grid, spacing scales (the default surface)
 │       ├── fonts/         ← font files + FONTS.md licensing notes
 │       ├── assets/
 │       │   ├── images/
@@ -62,7 +64,8 @@ branding/
 - Client folder: **lowercase-kebab-case** (`vanman`, `acme-co`). One client = one folder.
 - Files: lowercase-kebab, prefixed with client where ambiguous
   (`vanman-logo.svg`, `vanman-logo-mono.svg`).
-- Tokens: `*.tokens.json`, one file per category (`color`, `typography`, `spacing`).
+- Tokens: `*.tokens.json`, one file per category, under `foundation/` (colour, typography) or a
+  surface folder (`web/` for spacing, grid, etc.). See §5.
 - Never use spaces in committed filenames.
 
 ---
@@ -77,12 +80,13 @@ git submodule add <branding-repo-url> branding
 git submodule update --init
 ```
 
-Then reference assets by path, e.g. `branding/clients/vanman/tokens/color.tokens.json`.
+Then reference assets by path, e.g. `branding/clients/vanman/tokens/foundation/color.tokens.json`.
 
 **Workflow for "make this mockup on-brand for <client>":**
 
 1. Resolve the client folder: `clients/<client>/`.
-2. Load `tokens/*.tokens.json` → use these exact colours, type, spacing. Do not
+2. Load `tokens/foundation/` for colour and type, and the relevant surface folder
+   (`tokens/web/` for a page build) for spacing and grid. Use these exact values. Do not
    invent values that aren't in the tokens.
 3. Load `fonts/` → use the actual brand fonts (check `FONTS.md` for the families
    and weights available).
@@ -109,12 +113,22 @@ JSON shape so they're tool-agnostic and map cleanly to Figma variables:
 ```
 
 - Every token has `$value` and `$type`. `$description` is encouraged.
-- Categories: `color.tokens.json`, `typography.tokens.json`, `spacing.tokens.json`
-  (add `radius`, `shadow`, `elevation` as needed).
-- **Spacing/padding** uses a scale (e.g. 4-based), not arbitrary px — see the
-  template.
+- **Two layers.** Tokens split into `foundation/` (surface-agnostic: colour, typography, the "what
+  the brand is", shared by everything) and one folder per **surface** that applies the foundation.
+  `web/` (UX/UI: grid, spacing, padding, radius, icon) is the default and ~90% of the work. Other
+  surfaces (`decks/`, etc.) are added only when there is real content, and they pull from
+  `foundation/` rather than copying it. This keeps web as the front door and stops other surfaces
+  diluting it.
+- Categories within a layer: `color.tokens.json`, `typography.tokens.json` (foundation);
+  `spacing.tokens.json`, grid/setup, `radius`, etc. (web). Colour modes can be a folder of files
+  (`foundation/colors/base.tokens.json`, `inverse.tokens.json`).
+- **Spacing/padding** uses a scale, not arbitrary px — see the template and the principles doc.
 - Reference other tokens with `{group.name}` aliases where it helps
   (e.g. a button background that points at `{color.brand.primary}`).
+- **Principles.** How tokens are assigned by role (so classes stay consistent) is documented once,
+  for the house, at `pixel-theory/tokens/PRINCIPLES.md` (universal + colour) and
+  `pixel-theory/tokens/web/PRINCIPLES.md` (the web spatial system and class-naming discipline).
+  Clients inherit these; they do not each copy them.
 
 > ⚠️ If a token value isn't known yet, leave the placeholder **and** mark it with
 > `"$description": "PLACEHOLDER — confirm with brand source"`. Never silently

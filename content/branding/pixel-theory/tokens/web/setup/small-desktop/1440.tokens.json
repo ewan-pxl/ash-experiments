@@ -1,0 +1,209 @@
+{
+  "fundamentals": {
+    "page-width": {
+      "$type": "number",
+      "$value": 1438,
+      "$extensions": {
+        "com.figma.variableId": "VariableID:35653:1881",
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ]
+      }
+    },
+    "columns": {
+      "$type": "number",
+      "$value": 10,
+      "$extensions": {
+        "com.figma.variableId": "VariableID:35652:1879",
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ]
+      }
+    },
+    "margin": {
+      "$type": "number",
+      "$value": 56,
+      "$extensions": {
+        "com.figma.variableId": "VariableID:35653:1880",
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ]
+      }
+    },
+    "gutter": {
+      "$type": "number",
+      "$value": 24,
+      "$extensions": {
+        "com.figma.variableId": "VariableID:35662:2764",
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ]
+      }
+    },
+    "section-spacer-small": {
+      "$type": "number",
+      "$value": 56,
+      "$extensions": {
+        "com.figma.variableId": "VariableID:35653:1917",
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ]
+      }
+    },
+    "section-spacer-base": {
+      "$type": "number",
+      "$value": 109,
+      "$extensions": {
+        "com.figma.variableId": "VariableID:35653:1918",
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ]
+      }
+    },
+    "section-spacer-large": {
+      "$type": "number",
+      "$value": 147,
+      "$extensions": {
+        "com.figma.variableId": "VariableID:35653:1919",
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ]
+      }
+    },
+    "section-spacer-asb-top": {
+      "$type": "number",
+      "$value": 255,
+      "$extensions": {
+        "com.figma.variableId": "VariableID:37264:9799",
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ]
+      }
+    }
+  },
+  "columns": {
+    "1": {
+      "$type": "number",
+      "$value": 111,
+      "$extensions": {
+        "com.figma.variableId": "VariableID:35659:2747",
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ]
+      }
+    },
+    "2": {
+      "$type": "number",
+      "$value": 246,
+      "$extensions": {
+        "com.figma.variableId": "VariableID:35662:2748",
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ]
+      }
+    },
+    "3": {
+      "$type": "number",
+      "$value": 381,
+      "$extensions": {
+        "com.figma.variableId": "VariableID:35662:2749",
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ]
+      }
+    },
+    "4": {
+      "$type": "number",
+      "$value": 516,
+      "$extensions": {
+        "com.figma.variableId": "VariableID:35662:2750",
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ]
+      }
+    },
+    "5": {
+      "$type": "number",
+      "$value": 651,
+      "$extensions": {
+        "com.figma.variableId": "VariableID:35662:2751",
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ]
+      }
+    },
+    "6": {
+      "$type": "number",
+      "$value": 786,
+      "$extensions": {
+        "com.figma.variableId": "VariableID:35662:2752",
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ]
+      }
+    },
+    "7": {
+      "$type": "number",
+      "$value": 921,
+      "$extensions": {
+        "com.figma.variableId": "VariableID:35662:2753",
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ]
+      }
+    },
+    "8": {
+      "$type": "number",
+      "$value": 1056,
+      "$extensions": {
+        "com.figma.variableId": "VariableID:35662:2754",
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ]
+      }
+    },
+    "9": {
+      "$type": "number",
+      "$value": 1191,
+      "$extensions": {
+        "com.figma.variableId": "VariableID:35662:2755",
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ]
+      }
+    },
+    "10": {
+      "$type": "number",
+      "$value": 1326,
+      "$extensions": {
+        "com.figma.variableId": "VariableID:35662:2756",
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ]
+      }
+    },
+    "11": {
+      "$type": "number",
+      "$value": 1326,
+      "$extensions": {
+        "com.figma.variableId": "VariableID:35662:2757",
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ]
+      }
+    },
+    "12": {
+      "$type": "number",
+      "$value": 1326,
+      "$extensions": {
+        "com.figma.variableId": "VariableID:35662:2758",
+        "com.figma.scopes": [
+          "ALL_SCOPES"
+        ]
+      }
+    }
+  },
+  "$extensions": {
+    "com.figma.modeName": "small-desktop/1440"
+  }
+}

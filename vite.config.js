@@ -241,32 +241,33 @@ function readBrandDir(brandDir) {
     .map((full) => ({ name: relPath(resolve(brandDir, 'logos'), full), ...(inlineImage(full) || {}) }))
     .filter((l) => l.kind)
 
-  const colorTokens = readJson(resolve(brandDir, 'tokens', 'color.tokens.json'))
-  const colorMap = colorTokens ? flattenTokens(colorTokens) : {}
-  const colors = Object.entries(colorMap)
+  // Merge EVERY token file under tokens/ (any depth) into one map, so the reader is
+  // robust to how the branding repo nests them — flat, foundation/ + web/, or the
+  // deeper Figma-export layout (e.g. tokens/foundation/colors/base.tokens.json).
+  const tokenMap = {}
+  for (const f of walkFiles(resolve(brandDir, 'tokens'), (n) => n.toLowerCase().endsWith('.json'))) {
+    const json = readJson(f)
+    if (json) flattenTokens(json, [], tokenMap)
+  }
+  // Resolve aliases and surface a display value. Colour `$value` may be a plain hex
+  // string or a Figma object ({ hex, components, … }) — show the hex either way.
+  const display = (raw) => {
+    const v = resolveToken(raw, tokenMap)
+    if (v && typeof v === 'object') return v.hex || v.value || JSON.stringify(v)
+    return v
+  }
+  // Colours: anything typed `color`, wherever it lives (theme/button/icon/… included).
+  const colors = Object.entries(tokenMap)
     .filter(([, t]) => t.type === 'color')
-    .map(([name, t]) => ({
-      name: name.replace(/^color\./, ''),
-      value: resolveToken(t.value, colorMap),
-      raw: t.value,
-      description: t.description || '',
-    }))
-
-  const typeTokens = readJson(resolve(brandDir, 'tokens', 'typography.tokens.json'))
-  const typeMap = typeTokens ? flattenTokens(typeTokens) : {}
-  const typography = Object.entries(typeMap).map(([name, t]) => ({
-    name,
-    value: resolveToken(t.value, typeMap),
-    type: t.type,
-    description: t.description || '',
-  }))
-
-  const spacingTokens = readJson(resolve(brandDir, 'tokens', 'spacing.tokens.json'))
-  const spacingMap = spacingTokens ? flattenTokens(spacingTokens) : {}
-  const spacing = Object.entries(spacingMap).map(([name, t]) => ({
-    name: name.replace(/^(spacing|space)\./, ''),
-    value: resolveToken(t.value, spacingMap),
-  }))
+    .map(([name, t]) => ({ name: name.replace(/^color\./, ''), value: display(t.value), description: t.description || '' }))
+  // Typography: the font/* and textStyle/* groups (and any font-typed token).
+  const typography = Object.entries(tokenMap)
+    .filter(([p, t]) => t.type !== 'color' && (/^font(\.|$)/.test(p) || /^textStyle(\.|$)/.test(p) || ['fontFamily', 'fontWeight', 'typography'].includes(t.type)))
+    .map(([name, t]) => ({ name, value: display(t.value), type: t.type }))
+  // Spacing & radius scales.
+  const spacing = Object.entries(tokenMap)
+    .filter(([p, t]) => t.type !== 'color' && /^(spacing|space|radius)(\.|$)/.test(p))
+    .map(([name, t]) => ({ name: name.replace(/^(spacing|space)\./, ''), value: display(t.value) }))
 
   const assetsDir = resolve(brandDir, 'assets')
   const images = walkFiles(assetsDir, (n) => {

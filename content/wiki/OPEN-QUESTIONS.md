@@ -56,7 +56,10 @@ Graham and Baraka, action the Notion fixes, and this repo is settled.
 
 - **Asset-creation SOP** (custom icon packs, illustrations) was explicitly requested and is ramping
   for Turnkey, but is not written yet. `03-delivery/design-dev-sop.md`.
-- **Spacing scale** beyond section padding is undocumented in the Design SOP. `03-delivery/`.
+- **Two colour themes missing.** The Figma token export carries `base` and `inverse` modes; the offering
+  promises four (light, dark, inverse, dark inverse). The other two still need exporting into
+  `branding/pixel-theory/tokens/foundation/colors/`. (The spacing scale, previously flagged here as undocumented, is
+  now in those tokens and documented in `03-delivery/design-dev-sop.md`.)
 - **Six-lenses to four-levers mapping** is not pinned, so the hypothesis "Lever" field can be filled
   inconsistently. `02-methodology/`.
 - **Daily Vitals developer questions** (API version pinning, partial-failure policy, N8N hosting, AI
