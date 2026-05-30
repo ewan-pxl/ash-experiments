@@ -1,12 +1,28 @@
 # CLAUDE.md
 
-This repo is a **public scratchpad**. Someone talks to you, you build a small self-contained web
-page, and it goes live at its own URL. There is **no homepage** — the root and every unknown path
-show a 404. There is one hidden index at `/home` that lists every page.
+This repo is a **scratchpad + internal hub ("Post-Click OS")**. Someone talks to you, you build a
+small self-contained web page, and it goes live at its own URL. The shell at `/home` is the
+Post-Click OS home, with three areas beneath it. The root `/` and every unknown path still show a 404.
 
 **Your job:**
 - When asked for "a new thing", scaffold a new isolated page (recipe below).
 - When asked to change an existing thing, edit **only that page's folder**.
+
+## Post-Click OS shell (the `src/` front-end)
+
+The shell is now an internal hub, not just a hidden list. Routing is client-side in `src/App.vue`:
+
+- `/home` → **Launcher** (`LauncherView.vue`) — three cards: Experiments · Wiki · Branding.
+- `/home/experiments` and `/home/experiments/<folder>` → the **experiments index** (`IndexView.vue`,
+  folders / projects / tags). This is where the page list used to live at `/home`; it moved down one
+  level so the launcher can own `/home`. Live page URLs are unchanged (`/<folder>/<slug>-NNN/`).
+- `/home/wiki` → **Wiki** (`WikiView.vue`), read-only render of the sibling **pxl-postclick-os** repo.
+- `/home/branding` → **Branding** (`BrandingView.vue`), read-only gallery of the sibling **branding** repo.
+
+The two sibling repos (`../pxl-postclick-os`, `../branding`) are read at build/serve time by the
+`postclickData()` plugin in `vite.config.js` and exposed as `virtual:postclick-data`. They are
+**read-only sources** — never write to them from here. Building pages is unaffected by all of this;
+the recipe below still applies and the experiments index still picks up `meta.json` automatically.
 
 ---
 
@@ -169,7 +185,8 @@ createApp(App).mount('#app')
 - **Keep `updated` current** — set `created` and `updated` to today when you make a page, and bump
   `updated` to today whenever you edit an existing one. It drives the last-touched date on folders
   and projects.
-- **Don't create a homepage or link to `/home`.** The 404 and hidden index are intentional.
+- **Don't add a public homepage at the root `/`.** `/` and unknown paths stay 404. The Post-Click
+  OS home lives at `/home` (the launcher) — that's intentional and is the shell's job, not a page's.
 - **Keep `<meta name="robots" content="noindex" />` in every page's `index.html`.** Nothing here should be indexed by search engines.
 
 ---
@@ -276,7 +293,8 @@ file.
 ## Preview & ship
 
 - First time: `npm install`. Then `npm run dev`.
-- The index is at <http://localhost:5173/home> (it links to each page automatically).
+- The Post-Click OS home is at <http://localhost:5173/home>; the experiments index is at
+  <http://localhost:5173/home/experiments> (it links to each page automatically).
 - **Dev serves the exact same clean URLs as production**, so a page is at
   `http://localhost:5173/<folder-slugged>/<slug>-<NNN>/` — identical to the live link, just on
   localhost. (A dev middleware maps it to the on-disk page; you never need the `/pages/...` path.)

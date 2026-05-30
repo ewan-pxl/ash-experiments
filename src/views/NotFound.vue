@@ -12,6 +12,7 @@
 }
 .code {
   margin: 0;
+  font-family: var(--display);
   font-size: clamp(3rem, 12vw, 7rem);
   font-weight: 700;
   letter-spacing: -0.04em;

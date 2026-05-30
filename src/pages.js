@@ -60,8 +60,14 @@ export const pagePath = (p) => '/' + [slugifyPath(p.folder), p.slug].filter(Bool
 // maps these URLs onto the on-disk /pages/<slug>/ files).
 export const pageHref = (p) => pagePath(p) + '/'
 
+// The experiments browser lives under /home/experiments (the bare /home root is
+// the Post-Click OS launcher). Live page URLs are unaffected — pages still serve
+// at /<folder>/<slug>/; only the hidden index's own browsing URLs sit here.
+export const EXPERIMENTS_BASE = '/home/experiments'
+
 // Index link to a folder view (root list when folder is empty); always slugged.
-export const folderHref = (folder) => '/home' + (folder ? '/' + slugifyPath(folder) : '')
+export const folderHref = (folder) =>
+  EXPERIMENTS_BASE + (folder ? '/' + slugifyPath(folder) : '')
 
 // Clickable breadcrumb segments for a folder path — raw label, slugged href.
 export const folderCrumbs = (folder) =>
@@ -120,7 +126,7 @@ export function resolveFolder(slugPath) {
 
 // ---- projects (sharing groups; orthogonal to folders) ----
 export const projectHref = (name) =>
-  '/home?project=' + (name ? encodeURIComponent(slugifySeg(name)) : '')
+  EXPERIMENTS_BASE + '?project=' + (name ? encodeURIComponent(slugifySeg(name)) : '')
 
 export const pagesInProject = (name) =>
   pages.filter((p) => p.project && slugifySeg(p.project) === slugifySeg(name))

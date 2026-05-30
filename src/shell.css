@@ -1,12 +1,45 @@
+/* ===========================================================================
+   Post-Click OS shell — Pixel Theory design system (light).
+   Mirrors the deck design language: Funnel Display headings, Inter body,
+   Geist Mono for code/paths; ink-purple text on cream, white rounded cards
+   with soft purple-tinted borders, violet accent, yellow highlight.
+   The deck pages are isolated builds and are unaffected by this file.
+   =========================================================================== */
 :root {
-  color-scheme: dark;
-  --bg: #0b0d10;
-  --panel: #15181d;
-  --border: #262b33;
-  --text: #e7eaee;
-  --muted: #8b94a3;
-  --accent: #5b9dff;
-  --project: #c08cff;
+  color-scheme: light;
+
+  /* surfaces */
+  --bg: #f6f4ef;        /* soft cream page */
+  --panel: #ffffff;     /* cards */
+  --panel-2: #f1eee8;   /* inset tiles / stat tiles */
+  --border: rgba(44, 15, 68, 0.1);
+  --border-strong: rgba(44, 15, 68, 0.16);
+
+  /* ink / text */
+  --ink: #2c0f44;
+  --text: #2c0f44;
+  --body: rgba(44, 15, 68, 0.74);
+  --muted: rgba(44, 15, 68, 0.52);
+
+  /* brand accents */
+  --accent: #9224e9;    /* violet — primary interactive */
+  --accent-ink: #ffffff;
+  --accent-soft: rgba(146, 36, 233, 0.1);
+  --yellow: #fec200;
+  --project: #9224e9;
+  --good: #2e9e5b;      /* positive / "built" green (from the reference) */
+  --good-soft: rgba(46, 158, 91, 0.13);
+
+  /* type */
+  --display: 'Funnel Display', 'Helvetica Neue', Arial, sans-serif;
+  --bodyfont: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --mono: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  /* shape */
+  --radius: 16px;
+  --radius-sm: 10px;
+  --shadow: 0 1px 2px rgba(44, 15, 68, 0.05), 0 6px 20px rgba(44, 15, 68, 0.05);
+  --shadow-hover: 0 2px 6px rgba(44, 15, 68, 0.07), 0 12px 30px rgba(44, 15, 68, 0.09);
 }
 
 * {
@@ -22,7 +55,7 @@ body {
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-family: var(--bodyfont);
   -webkit-font-smoothing: antialiased;
 }
 
@@ -31,9 +64,22 @@ a {
   text-decoration: none;
 }
 
+/* Back-to-launcher link shared across OS areas */
+.os-back {
+  display: inline-block;
+  margin-bottom: 1.5rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: color 0.15s ease;
+}
+.os-back:hover {
+  color: var(--accent);
+}
+
 /* ---- shared index UI (list + folder views) ---- */
 .index {
-  max-width: 880px;
+  max-width: 920px;
   margin: 0 auto;
   padding: 4rem 1.25rem 6rem;
 }
@@ -46,9 +92,11 @@ a {
 }
 .index-head h1 {
   margin: 0;
-  font-size: 1.5rem;
-  font-weight: 650;
+  font-family: var(--display);
+  font-size: 1.85rem;
+  font-weight: 700;
   letter-spacing: -0.02em;
+  color: var(--ink);
 }
 .count {
   color: var(--muted);
@@ -62,13 +110,14 @@ a {
 }
 .search {
   width: 100%;
-  padding: 0.7rem 2.4rem 0.7rem 0.95rem;
+  padding: 0.75rem 2.4rem 0.75rem 1rem;
   background: var(--panel);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   color: var(--text);
   font-size: 0.95rem;
   font-family: inherit;
+  box-shadow: var(--shadow);
 }
 .search::placeholder {
   color: var(--muted);
@@ -76,6 +125,7 @@ a {
 .search:focus {
   outline: none;
   border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
 }
 .search::-webkit-search-cancel-button {
   display: none;
@@ -100,14 +150,15 @@ a {
 }
 .search-clear:hover {
   color: var(--text);
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(44, 15, 68, 0.06);
 }
 
 .section-label {
   margin: 0 0 0.75rem;
-  font-size: 0.72rem;
-  letter-spacing: 0.08em;
+  font-size: 0.7rem;
+  letter-spacing: 0.09em;
   text-transform: uppercase;
+  font-weight: 600;
   color: var(--muted);
 }
 
@@ -116,10 +167,11 @@ a {
   gap: 0.25rem;
   width: fit-content;
   margin-bottom: 1.75rem;
-  padding: 0.25rem;
+  padding: 0.28rem;
   background: var(--panel);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
 }
 .tab {
   appearance: none;
@@ -128,6 +180,7 @@ a {
   color: var(--muted);
   font: inherit;
   font-size: 0.9rem;
+  font-weight: 500;
   padding: 0.45rem 1.1rem;
   border-radius: 7px;
   cursor: pointer;
@@ -138,7 +191,7 @@ a {
 }
 .tab.active {
   background: var(--accent);
-  color: #03070f;
+  color: var(--accent-ink);
   font-weight: 600;
 }
 
@@ -152,6 +205,7 @@ a {
 }
 .breadcrumb a {
   color: var(--accent);
+  font-weight: 500;
 }
 .breadcrumb a:hover {
   text-decoration: underline;
@@ -199,29 +253,35 @@ a {
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 0.75rem;
+  gap: 0.85rem;
 }
 .grid + .section-label {
   margin-top: 2rem;
 }
 .folder-grid {
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
 }
 .card.folder-card {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 0.6rem;
+  gap: 0.7rem;
   height: 100%;
 }
 .folder-head {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.6rem;
 }
 .folder-card .folder-icon {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9px;
+  background: var(--accent-soft);
   color: var(--accent);
-  font-size: 1.3rem;
+  font-size: 1.2rem;
 }
 .folder-card .folder-name {
   font-weight: 600;
@@ -233,26 +293,31 @@ a {
   font-variant-numeric: tabular-nums;
 }
 .project-card .folder-icon {
-  color: var(--project);
+  background: rgba(254, 194, 0, 0.16);
+  color: #b58800;
 }
+
 .card {
   position: relative;
   display: block;
   background: var(--panel);
   border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 1.1rem 1.25rem;
-  transition: border-color 0.15s ease, transform 0.15s ease;
+  border-radius: var(--radius);
+  padding: 1.2rem 1.35rem;
+  box-shadow: var(--shadow);
+  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
 .card:hover {
-  border-color: var(--accent);
-  transform: translateY(-1px);
+  border-color: var(--border-strong);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
 }
 .card .crumb {
   margin: 0 0 0.4rem;
-  font-size: 0.72rem;
-  letter-spacing: 0.04em;
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
+  font-weight: 600;
   color: var(--muted);
 }
 .card .crumb a {
@@ -264,7 +329,7 @@ a {
   color: var(--accent);
 }
 .card .crumb .sep {
-  color: var(--border);
+  color: var(--border-strong);
 }
 .card-top {
   display: flex;
@@ -273,11 +338,12 @@ a {
   gap: 1rem;
 }
 .name {
+  font-family: var(--display);
   font-weight: 600;
-  font-size: 1.05rem;
+  font-size: 1.1rem;
+  letter-spacing: -0.01em;
 }
-/* Stretched link: makes the whole card clickable to the page while leaving
-   the folder breadcrumb links (z-index 1) clickable on top. */
+/* Stretched link: whole card clickable, leaving breadcrumb links (z-index 1) on top. */
 .name-link::after {
   content: "";
   position: absolute;
@@ -286,13 +352,14 @@ a {
 }
 .id {
   color: var(--muted);
-  font-size: 0.8rem;
+  font-family: var(--mono);
+  font-size: 0.78rem;
   font-variant-numeric: tabular-nums;
 }
 .desc {
-  color: var(--muted);
+  color: var(--body);
   margin: 0.4rem 0 0.9rem;
-  line-height: 1.5;
+  line-height: 1.55;
   font-size: 0.925rem;
 }
 .card-tags {
@@ -302,22 +369,23 @@ a {
   margin: 0 0 0.9rem;
 }
 .tag {
-  --tag-h: 220;
+  --tag-h: 270;
   position: relative;
   z-index: 1;
   appearance: none;
   border: 0;
-  background: hsl(var(--tag-h) 60% 60% / 0.14);
-  color: hsl(var(--tag-h) 65% 74%);
+  background: hsl(var(--tag-h) 64% 94%);
+  color: hsl(var(--tag-h) 48% 40%);
   font: inherit;
   font-size: 0.72rem;
-  padding: 0.12rem 0.5rem;
-  border-radius: 6px;
+  font-weight: 500;
+  padding: 0.14rem 0.55rem;
+  border-radius: 7px;
   cursor: pointer;
   transition: background 0.15s ease, color 0.15s ease;
 }
 .tag:hover {
-  background: hsl(var(--tag-h) 60% 60% / 0.26);
+  background: hsl(var(--tag-h) 64% 88%);
 }
 .tag-row {
   display: flex;
@@ -329,11 +397,11 @@ a {
   font-weight: 700;
   letter-spacing: 0.05em;
   color: var(--muted);
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(44, 15, 68, 0.05);
 }
 .tag-more:hover {
   color: var(--text);
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(44, 15, 68, 0.09);
 }
 .tag-cloud {
   display: flex;
@@ -342,10 +410,9 @@ a {
 }
 .tag-cloud .tag {
   font-size: 0.8rem;
-  padding: 0.25rem 0.7rem;
+  padding: 0.28rem 0.7rem;
 }
 .tag-count {
-  color: var(--muted);
   opacity: 0.7;
   margin-left: 0.15rem;
 }
@@ -364,24 +431,27 @@ a {
   position: relative;
   z-index: 1;
   color: var(--project);
-  border: 1px solid color-mix(in srgb, var(--project) 45%, transparent);
+  border: 1px solid color-mix(in srgb, var(--project) 35%, transparent);
   border-radius: 999px;
-  padding: 0.08rem 0.5rem;
+  padding: 0.1rem 0.55rem;
   font-size: 0.7rem;
+  font-weight: 500;
   letter-spacing: 0.02em;
   white-space: nowrap;
   cursor: pointer;
 }
 .project-badge:hover {
-  background: color-mix(in srgb, var(--project) 16%, transparent);
+  background: var(--accent-soft);
   border-color: var(--project);
 }
 .slug {
   color: var(--accent);
-  font-size: 0.8rem;
+  font-family: var(--mono);
+  font-size: 0.78rem;
 }
 .date {
   color: var(--muted);
-  font-size: 0.78rem;
+  font-family: var(--mono);
+  font-size: 0.76rem;
   font-variant-numeric: tabular-nums;
 }

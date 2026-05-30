@@ -14,6 +14,7 @@ import {
   resolveFolder,
   resolveProject,
   tagHue,
+  EXPERIMENTS_BASE,
 } from '../pages.js'
 
 // Decode the URL into {tab, folder, project}.
@@ -30,9 +31,9 @@ function parseLocation() {
     return { tab: 'projects', folder: '', project: resolveProject((params.get('project') || '').trim()) }
   }
   const path = window.location.pathname.replace(/\/+$/, '')
-  if (path.startsWith('/home/')) {
+  if (path.startsWith(EXPERIMENTS_BASE + '/')) {
     const urlFolder = path
-      .slice('/home/'.length)
+      .slice((EXPERIMENTS_BASE + '/').length)
       .split('/')
       .map((s) => {
         try {
@@ -137,7 +138,7 @@ const urlFor = (t, f, p) => {
   // Only the "drilled-in" states get a query/path; tab roots are just /home.
   if (t === 'projects' && p) return projectHref(p)
   if (t === 'folder' && f) return folderHref(f)
-  return '/home'
+  return EXPERIMENTS_BASE
 }
 function go(t, f = '', p = '') {
   tab.value = t
@@ -190,8 +191,9 @@ onBeforeUnmount(() => window.removeEventListener('popstate', onPop))
 
 <template>
   <main class="index">
+    <a href="/home" class="os-back">← Post-Click OS</a>
     <header class="index-head">
-      <h1>Index</h1>
+      <h1>Experiments</h1>
       <span class="count">{{ pages.length }} {{ pages.length === 1 ? 'page' : 'pages' }}</span>
     </header>
 
@@ -278,7 +280,7 @@ onBeforeUnmount(() => window.removeEventListener('popstate', onPop))
     <!-- FOLDER BROWSER -->
     <template v-else-if="tab === 'folder'">
       <nav v-if="folder" class="breadcrumb">
-        <a href="/home" @click="clickNav($event, 'folder', '')">root</a>
+        <a :href="EXPERIMENTS_BASE" @click="clickNav($event, 'folder', '')">root</a>
         <template v-for="(c, i) in crumbs" :key="c.href">
           <span class="sep">/</span>
           <a v-if="i < crumbs.length - 1" :href="c.href" @click="clickNav($event, 'folder', c.folder)">{{
@@ -329,7 +331,7 @@ onBeforeUnmount(() => window.removeEventListener('popstate', onPop))
       <!-- a specific project: just its pages -->
       <template v-if="project">
         <nav class="breadcrumb">
-          <a href="/home" @click="clickNav($event, 'projects', '', '')">projects</a>
+          <a :href="EXPERIMENTS_BASE" @click="clickNav($event, 'projects', '', '')">projects</a>
           <span class="sep">/</span>
           <span class="current">{{ project }}</span>
         </nav>
