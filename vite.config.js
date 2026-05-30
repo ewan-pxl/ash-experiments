@@ -7,18 +7,11 @@ import { readdirSync, readFileSync, existsSync, statSync } from 'node:fs'
 const root = dirname(fileURLToPath(import.meta.url))
 const pagesDir = resolve(root, 'pages')
 
-// The two sibling content repos this front-end reads from (browse-only).
-// Locally they live next to ash-experiments in ~/Documents/GitHub/, and we read
-// them directly so edits show instantly. On the deploy server (Cloudflare) the
-// siblings don't exist, so we fall back to the committed snapshot in ./content
-// (produced by `npm run sync-content`). Set PXL_CONTENT=vendored to force the
-// snapshot locally (used to test the deploy path). Nothing is ever written back
-// to the source repos — they stay fully independent.
-const forceVendored = process.env.PXL_CONTENT === 'vendored'
-const pickSource = (sibling, vendored) =>
-  !forceVendored && existsSync(sibling) ? sibling : vendored
-const wikiDir = pickSource(resolve(root, '..', 'pxl-postclick-os'), resolve(root, 'content', 'wiki'))
-const brandingDir = pickSource(resolve(root, '..', 'branding'), resolve(root, 'content', 'branding'))
+// The Wiki and Assets content lives in-repo under content/ and IS the source of
+// truth — there are no external repos. content/wiki holds the knowledge-base
+// markdown; content/branding holds the brand assets (logos, DTCG tokens, imagery).
+const wikiDir = resolve(root, 'content', 'wiki')
+const brandingDir = resolve(root, 'content', 'branding')
 
 // A page's URL folder comes from its meta.json `folder` field (virtual — the
 // pages/ dir stays flat). Slugged to lowercase-dashes so the public path is clean:
@@ -141,11 +134,11 @@ function devCleanUrls() {
 }
 
 // ---------------------------------------------------------------------------
-// Post-Click OS data: read the two sibling content repos at build/serve time
-// and expose them to the shell as a single virtual module, `virtual:postclick-data`.
-// Text (markdown, token JSON) is inlined; brand assets are inlined as data URIs.
-// This works identically in dev and in the production build, needs no file-
-// serving config, and reads the repos as-is without modifying them.
+// Post-Click OS data: read the in-repo Wiki + Assets content (content/wiki and
+// content/branding) at build/serve time and expose it to the shell as a single
+// virtual module, `virtual:postclick-data`. Text (markdown, token JSON) is
+// inlined; brand assets are inlined as data URIs. content/ is the source of
+// truth — there are no external repos.
 // ---------------------------------------------------------------------------
 
 // `_intake` is the wiki repo's raw, non-canonical Notion/Slack dump (gitignored
@@ -219,7 +212,7 @@ function readJson(full) {
   }
 }
 
-// --- Wiki: every .md in pxl-postclick-os, grouped by its top-level folder. ---
+// --- Wiki: every .md in content/wiki, grouped by its top-level folder. ---
 function readWiki() {
   const docs = walkFiles(wikiDir, (n) => n.toLowerCase().endsWith('.md')).map((full) => {
     const rel = relPath(wikiDir, full)
@@ -325,19 +318,6 @@ function postclickData() {
       const wiki = readWiki()
       const branding = readBranding()
       return `export const wiki = ${JSON.stringify(wiki)}\nexport const branding = ${JSON.stringify(branding)}\n`
-    },
-    // Live-refresh the browser when the sibling repos change in dev.
-    configureServer(server) {
-      server.watcher.add([wikiDir, brandingDir])
-      const invalidate = (file) => {
-        if (!file.startsWith(wikiDir) && !file.startsWith(brandingDir)) return
-        const mod = server.moduleGraph.getModuleById(RESOLVED)
-        if (mod) server.moduleGraph.invalidateModule(mod)
-        server.ws.send({ type: 'full-reload' })
-      }
-      server.watcher.on('add', invalidate)
-      server.watcher.on('change', invalidate)
-      server.watcher.on('unlink', invalidate)
     },
   }
 }

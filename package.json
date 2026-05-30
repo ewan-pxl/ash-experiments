@@ -5,10 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "prebuild": "node scripts/sync-content.mjs",
     "build": "vite build",
-    "preview": "vite preview",
-    "sync-content": "node scripts/sync-content.mjs"
+    "preview": "vite preview"
   },
   "dependencies": {
     "marked": "^12.0.2",

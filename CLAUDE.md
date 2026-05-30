@@ -17,19 +17,20 @@ The shell is now an internal hub, not just a hidden list. Routing is client-side
   *In the business* — the delivery workbench (concepts → designers). Folders / projects / tags.
 - `/home/agency[/<folder>]` → **Agency** (`IndexView.vue` with `kind="agency"`).
   *On the business* — proposals, reporting, internal decks, marketing material. Same browser UI.
-- `/home/wiki` → **Wiki** (`WikiView.vue`), read-only render of the sibling **pxl-postclick-os** repo.
-- `/home/assets` → **Assets** (`AssetsView.vue`), read-only gallery of the sibling **branding** repo
-  (the area is called "Assets"; the source repo is still named `branding`).
+- `/home/wiki` → **Wiki** (`WikiView.vue`), renders the knowledge-base markdown in `content/wiki/`.
+- `/home/assets` → **Assets** (`AssetsView.vue`), gallery of the brand assets in `content/branding/`
+  (logos, DTCG tokens, imagery).
 
 **Experiments vs Agency is set per page by `meta.json` `kind`** (`"experiment"` or `"agency"`;
 defaults to `experiment`). Both areas share the exact same folder/project/tag browser — the page-list
 helpers in `pages.js` take `kind` as their first arg and scope to it, so the two never mix. Live page
 URLs are unchanged either way (`/<folder>/<slug>-NNN/`).
 
-The two sibling repos (`../pxl-postclick-os`, `../branding`) are read at build/serve time by the
-`postclickData()` plugin in `vite.config.js` and exposed as `virtual:postclick-data` (with a fallback
-to the committed `./content` snapshot — run `npm run sync-content` before deploy). They are
-**read-only sources** — never write to them from here. Building pages is unaffected by all of this.
+The Wiki and Assets content lives **in this repo** under `content/` (`content/wiki/` markdown and
+`content/branding/` brand assets) and **is the source of truth** — there are no external repos and no
+sync step. The `postclickData()` plugin in `vite.config.js` reads `content/` at build/serve time and
+exposes it as the `virtual:postclick-data` module (markdown inlined, images as data URIs). To edit the
+Wiki or Assets, edit the files under `content/` directly. Building pages is unaffected by all of this.
 
 ---
 
