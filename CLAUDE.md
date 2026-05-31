@@ -29,8 +29,30 @@ URLs are unchanged either way (`/<folder>/<slug>-NNN/`).
 The Wiki and Assets content lives **in this repo** under `content/` (`content/wiki/` markdown and
 `content/branding/` brand assets) and **is the source of truth** — there are no external repos and no
 sync step. The `postclickData()` plugin in `vite.config.js` reads `content/` at build/serve time and
-exposes it as the `virtual:postclick-data` module (markdown inlined, images as data URIs). To edit the
-Wiki or Assets, edit the files under `content/` directly. Building pages is unaffected by all of this.
+exposes it as the `virtual:postclick-data` module (markdown inlined as text; **raster images are
+emitted as real hashed files, never base64 data URIs** — `build.assetsInlineLimit` is `0`; SVG logos
+stay inline as markup so they can be CSS-themed). To edit the Wiki or Assets, edit the files under
+`content/` directly. Building pages is unaffected by all of this.
+
+## Auth & asset routing (Cloudflare Access — don't undo this)
+
+The OS (`/home*`) is gated by **Cloudflare Access** at the edge (Self-hosted app on
+`pages.thepixeltheory.app`, path `home`, allow `@thepixeltheory.com`). The live client decks at
+`/<folder>/<slug>/` stay **public**. Because a static site ships its data in JS bundles, the gate only
+protects the content if those bundles live **under `/home`** too — so the build **routes assets by
+privacy**, not into one `/assets` folder:
+
+- **Internal / OS assets → `/home/assets/`** (covered by the gate): the shell JS chunk (it inlines all
+  Wiki + branding content), the shell CSS, and any `content/` image used **only** by the OS.
+- **Public assets → `/assets/`**: every deck page's JS/CSS, shared vendor chunks, and any image that a
+  **public deck** also imports (Vite dedupes identical files, so a `content/` image that's byte-identical
+  to a deck image must stay public or the deck would 404 — it's public via the deck anyway).
+
+This split is implemented in `vite.config.js` via `chunkDir()` (JS chunks) and `assetDir()` (CSS/images)
+on `build.rollupOptions.output`. **Don't move OS assets back to `/assets`, and don't import
+`virtual:postclick-data` (or the Wiki/Assets views) from anything other than the shell** — either would
+leak the gated content into a public bundle. Root `/` redirects to `/home` (edge `_redirects` + an
+`App.vue` fallback for dev).
 
 ---
 

@@ -2,7 +2,7 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { resolve, dirname, relative, extname, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { readdirSync, readFileSync, existsSync, statSync } from 'node:fs'
+import { readdirSync, readFileSync, existsSync } from 'node:fs'
 
 const root = dirname(fileURLToPath(import.meta.url))
 const pagesDir = resolve(root, 'pages')
@@ -153,8 +153,6 @@ const IMAGE_MIME = {
   '.avif': 'image/avif',
   '.svg': 'image/svg+xml',
 }
-const MAX_INLINE_BYTES = 3 * 1024 * 1024 // skip anything huge so the bundle stays sane
-
 // Recursively collect files under `dir` matching `match(name)`; returns absolute paths.
 function walkFiles(dir, match, out = []) {
   if (!existsSync(dir)) return out
@@ -169,15 +167,16 @@ function walkFiles(dir, match, out = []) {
 
 const relPath = (base, full) => relative(base, full).split(sep).join('/')
 
-function inlineImage(full) {
+// Resolve a brand image. SVGs come back as raw markup (rendered via v-html for
+// theming). Raster images are NOT inlined — we return the absolute file path and
+// the virtual module imports it, so Vite emits a real, hashed file (routed under
+// /home/assets by assetFileNames) instead of a base64 data URI in the JS bundle.
+function loadImage(full) {
   try {
-    if (statSync(full).size > MAX_INLINE_BYTES) return null
     const ext = extname(full).toLowerCase()
-    const mime = IMAGE_MIME[ext]
-    if (!mime) return null
+    if (!IMAGE_MIME[ext]) return null
     if (ext === '.svg') return { kind: 'svg', markup: readFileSync(full, 'utf8') }
-    const b64 = readFileSync(full).toString('base64')
-    return { kind: 'img', src: `data:${mime};base64,${b64}` }
+    return { kind: 'img', file: full }
   } catch {
     return null
   }
@@ -231,7 +230,7 @@ function readWiki() {
 // --- Branding: one entry per brand (clients/* plus top-level brand folders). ---
 function readBrandDir(brandDir) {
   const logos = walkFiles(resolve(brandDir, 'logos'), (n) => IMAGE_MIME[extname(n).toLowerCase()])
-    .map((full) => ({ name: relPath(resolve(brandDir, 'logos'), full), ...(inlineImage(full) || {}) }))
+    .map((full) => ({ name: relPath(resolve(brandDir, 'logos'), full), ...(loadImage(full) || {}) }))
     .filter((l) => l.kind)
 
   // Merge EVERY token file under tokens/ (any depth) into one map, so the reader is
@@ -267,8 +266,8 @@ function readBrandDir(brandDir) {
     const ext = extname(n).toLowerCase()
     return ext in IMAGE_MIME && ext !== '.svg'
   })
-    .map((full) => ({ name: relPath(assetsDir, full), ...(inlineImage(full) || {}) }))
-    .filter((i) => i.src)
+    .map((full) => ({ name: relPath(assetsDir, full), ...(loadImage(full) || {}) }))
+    .filter((i) => i.file)
 
   const readmePath = resolve(brandDir, 'README.md')
   const fontsPath = resolve(brandDir, 'fonts', 'FONTS.md')
@@ -317,7 +316,28 @@ function postclickData() {
       if (id !== RESOLVED) return
       const wiki = readWiki()
       const branding = readBranding()
-      return `export const wiki = ${JSON.stringify(wiki)}\nexport const branding = ${JSON.stringify(branding)}\n`
+
+      // Replace each image's `file` (absolute path) with an `import` so Vite emits
+      // it as a real hashed asset. We stash a sentinel in the JSON, then splice the
+      // import identifier back in (unquoted) after stringifying.
+      const imports = []
+      const fileToId = new Map()
+      const refFor = (full) => {
+        if (!fileToId.has(full)) {
+          const ident = `__img${fileToId.size}`
+          fileToId.set(full, ident)
+          // Forward-slash specifier so Vite resolves it on Windows dev too.
+          imports.push(`import ${ident} from ${JSON.stringify(full.split(sep).join('/'))}`)
+        }
+        return fileToId.get(full)
+      }
+      for (const b of branding.brands || []) {
+        for (const l of b.logos || []) if (l.file) { l.src = ` ${refFor(l.file)} `; delete l.file }
+        for (const im of b.images || []) if (im.file) { im.src = ` ${refFor(im.file)} `; delete im.file }
+      }
+      const brandingCode = JSON.stringify(branding).replace(/" (__img\d+) "/g, '$1')
+
+      return `${imports.join('\n')}\nexport const wiki = ${JSON.stringify(wiki)}\nexport const branding = ${brandingCode}\n`
     },
   }
 }
@@ -329,6 +349,60 @@ export default defineConfig({
     alias: { '@projects': resolve(root, 'projects') },
   },
   build: {
-    rollupOptions: { input: pageEntries() },
+    // Never inline assets as base64 data URIs — emit real files so internal images
+    // can be routed under /home (behind the Access gate), not baked into a bundle.
+    assetsInlineLimit: 0,
+    rollupOptions: {
+      input: pageEntries(),
+      // Asset routing for the Cloudflare Access gate (which protects /home*):
+      // everything the OS shell needs (its JS chunk, its CSS, and the Wiki/Assets
+      // content images) lives UNDER /home/assets so Access covers it. Deck pages +
+      // shared vendor chunks stay public in /assets so the client decks keep loading
+      // without a login.
+      output: {
+        entryFileNames: (info) => `${chunkDir(info)}/[name]-[hash].js`,
+        chunkFileNames: (info) => `${chunkDir(info)}/[name]-[hash].js`,
+        assetFileNames: (info) => `${assetDir(info)}/[name]-[hash][extname]`,
+      },
+    },
   },
 })
+
+// A chunk is "private" (→ /home/assets) if it's the shell entry, or if it bundles
+// any of the secret-bearing modules (the postclick-data virtual module or the Wiki/
+// Assets views that import it). Everything else is public (→ /assets). Deck pages
+// never import those modules, so this never gates a public deck.
+function chunkDir(info) {
+  const ids = info.moduleIds || []
+  const isShellEntry = info.isEntry && info.name === 'shell'
+  const hasSecret = ids.some(
+    (id) =>
+      id.includes('postclick-data') ||
+      /[\\/]views[\\/](WikiView|AssetsView)\.vue/.test(id),
+  )
+  return isShellEntry || hasSecret ? 'home/assets' : 'assets'
+}
+
+// Companion to chunkDir for emitted assets (CSS, images). Internal assets go under
+// /home/assets (gated); public deck assets stay in /assets.
+//
+// An asset is internal if it comes from the in-repo content/ (branding + wiki
+// imagery), or it's the shell's own CSS (sourced only from src/). BUT if the same
+// bytes are also imported by a public deck (Vite dedupes identical files into one),
+// it must stay public so the deck keeps loading — such an image is public via the
+// deck anyway. Rollup gives root-relative paths (e.g. "content/branding/…"), so we
+// match with an optional leading slash.
+function assetDir(info) {
+  const srcs = info.originalFileNames || (info.originalFileName ? [info.originalFileName] : [])
+  const names = info.names || (info.name ? [info.name] : [])
+  const norm = (s) => s.split(sep).join('/')
+  const fromContent = srcs.some((s) => /(^|\/)content\/(branding|wiki)\//.test(norm(s)))
+  const sharedWithDeck = srcs.some((s) => /(^|\/)(pages|projects)\//.test(norm(s)))
+  const isCss = names.some((n) => n.endsWith('.css'))
+  const fromShellCss =
+    isCss &&
+    (names.some((n) => n.startsWith('shell')) ||
+      (srcs.some((s) => /(^|\/)src\//.test(norm(s))) && !sharedWithDeck))
+  if ((fromContent && !sharedWithDeck) || fromShellCss) return 'home/assets'
+  return 'assets'
+}
