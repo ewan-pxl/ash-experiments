@@ -1,6 +1,6 @@
 # Skills Library
 
-These are the custom Claude skills we've built for Pixel Theory. A skill is a packaged way of working: when you trigger one, Claude follows our exact method for that job instead of winging it. There are 26 of them, grouped below by what they're for.
+These are the custom Claude skills we've built for Pixel Theory. A skill is a packaged way of working: when you trigger one, Claude follows our exact method for that job instead of winging it. There are 27 of them, grouped below by what they're for.
 
 They live in this repo under `/skills` (one folder each), and they're wired into Claude Code, so anyone on the team can use them.
 
@@ -54,6 +54,14 @@ Conversion work: running tests, prepping briefs, logging results, building offer
 | `/intelligems-cro-sync` | Pulls A/B results from Intelligems and writes them into the matching CRO Lab Notion rows. Finds the unsynced tests itself. | `cro` `intelligems` `notion` |
 | `/offer-stack-creation` | Builds an irresistible offer with Russell Brunson's offer stack: value anchoring, risk reversal, urgency. | `offers` `cro` |
 | `/tripwire-funnel-optimization` | Optimizes tripwire funnels with Todd Brown's E5 method: pricing and upsell-path design. | `offers` `funnel` `cro` |
+
+## QA & delivery
+
+Checking the work actually holds up before and after it ships.
+
+| Skill | What it does | Tags |
+|---|---|---|
+| `/website-qa` | Runs a structured QA pass on a live or preview site with Playwright (functional flows, responsive breakpoints, console and network errors, visual layout), saves a timestamped run, and diffs it against a baseline to surface regressions. | `qa` `testing` `playwright` |
 
 ## Prospect & agency deliverables
 
