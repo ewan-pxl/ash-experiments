@@ -332,10 +332,10 @@ function postclickData() {
         return fileToId.get(full)
       }
       for (const b of branding.brands || []) {
-        for (const l of b.logos || []) if (l.file) { l.src = ` ${refFor(l.file)} `; delete l.file }
-        for (const im of b.images || []) if (im.file) { im.src = ` ${refFor(im.file)} `; delete im.file }
+        for (const l of b.logos || []) if (l.file) { l.src = `${refFor(l.file)}`; delete l.file }
+        for (const im of b.images || []) if (im.file) { im.src = `${refFor(im.file)}`; delete im.file }
       }
-      const brandingCode = JSON.stringify(branding).replace(/" (__img\d+) "/g, '$1')
+      const brandingCode = JSON.stringify(branding).replace(/"(__img\d+)"/g, '$1')
 
       return `${imports.join('\n')}\nexport const wiki = ${JSON.stringify(wiki)}\nexport const branding = ${brandingCode}\n`
     },
