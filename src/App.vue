@@ -18,6 +18,10 @@ import ptLogoSprite from '@projects/PXL decks/logo.svg?raw'
 // in dev the /home* middleware passthrough does the same — routing is client-side.
 const path = window.location.pathname.replace(/\/+$/, '') || '/'
 
+// Root has no public homepage of its own — send it to the OS front door at /home.
+// (Prod also does this at the edge via _redirects; this covers dev and is a fallback.)
+if (path === '/') window.location.replace('/home')
+
 function pick() {
   if (path === '/home') return 'launcher'
   if (path === '/home/experiments' || path.startsWith('/home/experiments/')) return 'experiments'
