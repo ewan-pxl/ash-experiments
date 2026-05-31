@@ -1,0 +1,143 @@
+{
+  "project": "trykepos",
+  "kind": "snag",
+  "created": "2026-05-31T11:27",
+  "title": "Client snag list verification",
+  "source": "Internal kēpos QA.docx",
+  "items": [
+    {
+      "n": 1,
+      "page": "Footer",
+      "snag": "Add Terms of Service to the website footer",
+      "status": "done",
+      "note": "Footer now lists Shipping Policy, Return Policy, Privacy Policy and Terms of Service (/policies/terms-of-service). The reference footer had none.",
+      "before": "image4.png",
+      "after": "snag-home-desktop.jpeg"
+    },
+    {
+      "n": 2,
+      "page": "Nav",
+      "snag": "Add Shop / Products to the nav bar so people can reach the PDP without clicking “Start Now”",
+      "status": "done",
+      "note": "Header now has Shop → /products/human-milk-bioactives alongside Benefits, Proof, About, FAQ, Reviews.",
+      "before": "image2.png",
+      "after": "snag-home-desktop.jpeg"
+    },
+    {
+      "n": 3,
+      "page": "Home",
+      "snag": "Add the scoop back to the homepage floater (dev note: added scoop, removed the duplicate on the next section)",
+      "status": "unverified",
+      "note": "Couldn't pixel-confirm the scoop in the floater from the full-page capture. Needs a quick designer glance.",
+      "before": "image1.png",
+      "after": "snag-home-desktop.jpeg"
+    },
+    {
+      "n": 4,
+      "page": "PDP / Cart",
+      "snag": "OTP → Subscribe & Save is not giving the full 47% off (marked “TO LOOK INTO”)",
+      "status": "unverified",
+      "note": "Live cart base prices confirmed (OTP $89.99 / no auto-discount; S&S $76.49 / 15%), but the welcome-offer 47% piece is applied by the real ATC/checkout flow which couldn't be triggered headlessly. The stacking bug is neither confirmed nor cleared — needs a real shopper click-through. Base data does confirm the welcome discount is not automatic, so the client's structural worry stands.",
+      "before": "image9.png",
+      "after": "snag4-cart-otp.jpeg"
+    },
+    {
+      "n": 5,
+      "page": "Cart",
+      "snag": "Cart up-sells: cap the welcome offer to 1 jar; add 1→3 month (save $43) and 3→6 month (save $103) up-sells (marked “TODO”)",
+      "status": "unverified",
+      "note": "Couldn't reproduce the in-cart up-sell modules or the qty≥2 welcome-offer behaviour headlessly. Needs verification in the live cart drawer via the real ATC.",
+      "before": "image14.png",
+      "after": "snag5-cart-2jars.jpeg"
+    },
+    {
+      "n": 6,
+      "page": "Home",
+      "snag": "Re-style / fix the review carousel — slow scroll, not swipeable on mobile, pauses oddly, too many generic AI product shots (also on the Gut Aging LP)",
+      "status": "partial",
+      "note": "Dev added drag support and disabled pausing. The carousel still shows generic product shots — the image swap the team already flagged is still outstanding.",
+      "before": "image3.png",
+      "after": "snag-home-desktop.jpeg"
+    },
+    {
+      "n": 7,
+      "page": "Proof",
+      "snag": "Odd spacing on the study spots (desktop) — dev added forced wrapping",
+      "status": "unverified",
+      "note": "Live desktop stat spacing reads consistent, but low confidence from a screenshot — worth a designer glance.",
+      "before": "image7.png",
+      "after": "snag-proof-desktop.jpeg"
+    },
+    {
+      "n": 8,
+      "page": "Proof",
+      "snag": "Blue highlight scroll function does not work on mobile (all the same blue) — dev added a JS fallback for pre-iOS 26",
+      "status": "unverified",
+      "note": "Native effect needs iOS 26+; a JS fallback was added. Needs a real older-iOS device to confirm — not judgeable from a screenshot.",
+      "before": "image10.png",
+      "after": "snag-proof-mobile.jpeg"
+    },
+    {
+      "n": 9,
+      "page": "About",
+      "snag": "Replace the Catalina & Oliver image with the UChicago image Whitney will provide",
+      "status": "done",
+      "note": "About hero now shows a greyscale University of Chicago image with “In partnership with University of Chicago”. The two-people photo is gone.",
+      "before": "image6.png",
+      "after": "snag-about-desktop.jpeg"
+    },
+    {
+      "n": 10,
+      "page": "About",
+      "snag": "Remove the citation that got layered in",
+      "status": "done",
+      "note": "No layered citation text/overlay found on the live About page. If any was baked into an image a close designer check confirms, but nothing is visible now.",
+      "before": "image8.png",
+      "after": "snag-about-desktop.jpeg"
+    },
+    {
+      "n": 11,
+      "page": "About",
+      "snag": "Only energy and bloating? Intentional?",
+      "status": "decision",
+      "note": "A client question, not a defect — the limited set is still shown. Needs a call on whether it's intentional.",
+      "before": "image5.png",
+      "after": "snag-about-desktop.jpeg"
+    },
+    {
+      "n": 12,
+      "page": "About",
+      "snag": "This image looks blurry / too cropped in — zoom out",
+      "status": "unverified",
+      "note": "Couldn't positively identify the specific tightly-cropped close-up live (there is a Close-up_Hand/Jar image present). Needs a designer eyeball vs the reference.",
+      "before": "image11.png",
+      "after": "snag-about-desktop.jpeg"
+    },
+    {
+      "n": 13,
+      "page": "About",
+      "snag": "This image is squished or skewed — dev tweaked it and changed the mobile breakpoint",
+      "status": "done",
+      "note": "Live About images use object-fit: cover (they crop, not distort), so no skew is visible. Dev follow-up still stands: trim the copy length so it doesn't stretch the image tall.",
+      "before": "image12.png",
+      "after": "snag-about-mobile.jpeg"
+    },
+    {
+      "n": 14,
+      "page": "Benefits",
+      "snag": "No bold text in hero sections; this section should be the light/cream theme version",
+      "status": "not_done",
+      "note": "Hero (“Built for guts that have tried everything”) is still dark-themed and “tried everything” is still bold. Neither requested change is applied.",
+      "before": "image13.png",
+      "after": "snag-benefits-desktop.jpeg"
+    }
+  ],
+  "summary": {
+    "done": 5,
+    "not_done": 1,
+    "partial": 1,
+    "decision": 1,
+    "unverified": 6,
+    "total": 14
+  }
+}

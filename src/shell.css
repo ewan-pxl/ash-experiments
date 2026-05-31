@@ -29,6 +29,10 @@
   --project: #9224e9;
   --good: #2e9e5b;      /* positive / "built" green (from the reference) */
   --good-soft: rgba(46, 158, 91, 0.13);
+  /* QA severity: high needs a red (none existed); med reuses yellow, low muted. */
+  --bad: #d23b3b;
+  --bad-soft: rgba(210, 59, 59, 0.12);
+  --yellow-soft: rgba(254, 194, 0, 0.16);
 
   /* type */
   --display: 'Funnel Display', 'Helvetica Neue', Arial, sans-serif;

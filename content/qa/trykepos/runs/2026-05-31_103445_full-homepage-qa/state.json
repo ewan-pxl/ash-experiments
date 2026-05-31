@@ -1,0 +1,152 @@
+{
+  "project": "trykepos",
+  "kind": "run",
+  "created": "2026-05-31T10:34:45",
+  "purpose": "full homepage QA",
+  "scope": [
+    "functional",
+    "responsive",
+    "console_network",
+    "visual"
+  ],
+  "urls": [
+    "https://trykepos.com/"
+  ],
+  "locale": "en",
+  "currency": "USD",
+  "notes": "Black-box run; not this repo's site. Pixel screenshots could not be captured: the Playwright MCP browser_take_screenshot timed out (5s) on every attempt INCLUDING a blank data: page, so it is an environment/tool limit, not a site issue. Visual/responsive checks were therefore done via DOM snapshots, computed-style/overflow measurement, and content-presence, not images. Shopify store served on the public domain (no preview redirect).",
+  "entries": {
+    "console_network::https://trykepos.com/::desktop-1440": {
+      "url": "https://trykepos.com/",
+      "breakpoint": "desktop-1440",
+      "check_type": "console_network",
+      "captured": "2026-05-31T10:41:00",
+      "screenshot": null,
+      "checked": "Loaded, settled, scrolled full page to trigger lazy assets; collected console (errors+warnings) and full network list; measured broken images (0 of 225); checked all requests for 4xx/5xx and failures.",
+      "findings": [
+        {
+          "signature": "console::splide-maximum-call-stack-recursion",
+          "severity": "medium",
+          "category": "console",
+          "summary": "Splide carousel throws 'RangeError: Maximum call stack size exceeded' in an infinite emit/dispatch loop",
+          "detail": "splide@4.1.4 (cdn.jsdelivr.net) recurses dispatch->emit->set->emit and overflows the stack. Fires ~6x on every clean load and multiplies to 12-27+ on each window resize / scroll reflow. The 6 carousels still render and function, but the homepage floods the console with stack-overflow errors, churns the main thread, and risks degraded performance on low-end devices and noise in error monitoring. Stack: Object.dispatch / emit / m / g / DocumentFragment.<anonymous> / n.emit / l[as set] / i.set, all in splide.min.js:8.",
+          "evidence": "home-console-full.log"
+        },
+        {
+          "signature": "network::rebuy-user-config-connection-closed",
+          "severity": "low",
+          "category": "network",
+          "summary": "Rebuy user/config request fails (ERR_CONNECTION_CLOSED)",
+          "detail": "GET https://cached.rebuyengine.com/api/v1/user/config?shop=7f421a-3.myshopify.com => FAILED net::ERR_CONNECTION_CLOSED (x2). Third-party Rebuy personalization endpoint; no Rebuy widget was visibly required on the homepage. Could affect cross-sell/recommendation widgets where Rebuy is used elsewhere.",
+          "evidence": "home-network.txt"
+        },
+        {
+          "signature": "network::facebook-pixel-blocked-by-orb",
+          "severity": "low",
+          "category": "network",
+          "summary": "Facebook tracking pixel blocked by browser (ERR_BLOCKED_BY_ORB)",
+          "detail": "GET https://www.facebook.com/privacy_sandbox/pixel/register/trigger/ => FAILED net::ERR_BLOCKED_BY_ORB (x2). Browser-level block of a third-party tracking pixel (Blotout/Meta). Not the store's code; tracking-only.",
+          "evidence": "home-network.txt"
+        },
+        {
+          "signature": "console::gorgias-chat-widget-not-installed",
+          "severity": "low",
+          "category": "console",
+          "summary": "Gorgias warns no chat widget installed for this store",
+          "detail": "[WARNING] No Gorgias chat widget installed or found for this Shopify store (7f421a-3) @ config.gorgias.chat. Benign third-party config warning.",
+          "evidence": "home-console.txt"
+        }
+      ]
+    },
+    "functional::https://trykepos.com/::desktop-1440": {
+      "url": "https://trykepos.com/",
+      "breakpoint": "desktop-1440",
+      "check_type": "functional",
+      "captured": "2026-05-31T10:41:00",
+      "screenshot": null,
+      "checked": "Header nav: 'Learn' dropdown is a proper hover-revealed menu (opacity:0/pointer-events:none by default; Benefits->/pages/benefits, Proof->/pages/proof). All 11 internal nav/footer/CTA destinations return HTTP 200 (product, benefits, proof, about, cart, blogs, 4 policies, account login). JS-driven nav targets verified present: '.oke-reviewsTab' (Reviews link), '#technical-reviews' (Read their reviews jump), '#MainContent' (skip link). 'They tried everything' tabs (Bloating/Regularity/Gut Barrier) switch active state correctly. Footer newsletter email field present (not submitted - live form). Footer columns (Shop/Learn/Inquire) all populated with resolving links.",
+      "findings": [
+        {
+          "signature": "functional::faq-pointer-cursor-no-toggle",
+          "severity": "low",
+          "category": "functional",
+          "summary": "FAQ items show a pointer cursor but clicking does not expand/collapse",
+          "detail": "Each of the 9 FAQ headers has cursor:pointer, implying an accordion, but clicking a header does not change the FAQ container height and all answers are already rendered/visible. Content is fully readable, so no information is lost; the pointer cursor just implies interactivity that isn't there. Likely an all-expanded/static Q&A by design.",
+          "evidence": "home-console.txt"
+        }
+      ]
+    },
+    "functional::https://trykepos.com/::mobile-375": {
+      "url": "https://trykepos.com/",
+      "breakpoint": "mobile-375",
+      "check_type": "functional",
+      "captured": "2026-05-31T10:49:31",
+      "screenshot": null,
+      "checked": "Mobile hamburger (.burger-menu / .ante-nav-mobile-menu-toggle): on a clean load a real tap on the visible burger icon opens the menu (adds 'open' class, panel slides from translateX(-280px) to left:0, overlay shown). All nav items present in the open menu (Shop, Learn, About, FAQ, Reviews, Start Now, Account, Cart). 'Learn' submenu expands to Benefits/Proof. Tapping the background overlay closes the menu. (Note: earlier 'menu won't open' observations were state pollution from repeated programmatic toggles, not a real bug - confirmed working on clean load.)",
+      "findings": [
+        {
+          "signature": "functional::mobile-close-button-zero-size",
+          "severity": "low",
+          "category": "functional",
+          "summary": "Mobile menu 'Close menu' (X) button renders at 0x0 and is not tappable",
+          "detail": "The dedicated .ante-mobile-nav-close (role=button, aria-label='Close menu') computes to 0x0 because its container .ante-mobile-nav-header is display:none. So there is no visible X to close the menu; users must tap the background overlay (works) or re-tap the burger. Minor UX gap - some users expect an explicit close control. Closing is still achievable, so not a blocker.",
+          "evidence": "home-console.txt"
+        }
+      ]
+    },
+    "responsive::https://trykepos.com/::desktop-1440": {
+      "url": "https://trykepos.com/",
+      "breakpoint": "desktop-1440",
+      "check_type": "responsive",
+      "captured": "2026-05-31T10:41:00",
+      "screenshot": null,
+      "checked": "Measured horizontal overflow at 1440x900: scrollWidth==clientWidth==1440, overflow 0px, no culprits. Desktop nav renders. No image capture (tool limit - see top-level notes).",
+      "findings": []
+    },
+    "responsive::https://trykepos.com/::tablet-768": {
+      "url": "https://trykepos.com/",
+      "breakpoint": "tablet-768",
+      "check_type": "responsive",
+      "captured": "2026-05-31T10:49:31",
+      "screenshot": null,
+      "checked": "Measured horizontal overflow at 768x1024: overflow 0px, no culprits. Nav renders in desktop mode (burger hidden) at this width.",
+      "findings": []
+    },
+    "responsive::https://trykepos.com/::mobile-375": {
+      "url": "https://trykepos.com/",
+      "breakpoint": "mobile-375",
+      "check_type": "responsive",
+      "captured": "2026-05-31T10:41:00",
+      "screenshot": null,
+      "checked": "Measured horizontal overflow at 375x812: overflow 0px, no culprits. Hamburger nav shown. No image capture (tool limit).",
+      "findings": []
+    },
+    "visual::https://trykepos.com/::desktop-1440": {
+      "url": "https://trykepos.com/",
+      "breakpoint": "desktop-1440",
+      "check_type": "visual",
+      "captured": "2026-05-31T10:41:00",
+      "screenshot": null,
+      "checked": "Content-presence (image capture unavailable - tool limit). All key sections present in DOM: hero ('Reverse gut aging.'), benefits ('fresh start for your whole body'), proof ('leading health experts'), guarantee (\"you don't pay\"), FAQ, reviews ('Rated 4.7/5'), footer. Single H1, 14 CTAs. 0 of 225 images broken. No price on homepage by design (pre-sell page; all CTAs route to /products/human-milk-bioactives).",
+      "findings": []
+    },
+    "visual::https://trykepos.com/::tablet-768": {
+      "url": "https://trykepos.com/",
+      "breakpoint": "tablet-768",
+      "check_type": "visual",
+      "captured": "2026-05-31T10:49:31",
+      "screenshot": null,
+      "checked": "Content-presence at 768 (no image capture). Same content set present; layout reflows without overflow; desktop nav retained.",
+      "findings": []
+    },
+    "visual::https://trykepos.com/::mobile-375": {
+      "url": "https://trykepos.com/",
+      "breakpoint": "mobile-375",
+      "check_type": "visual",
+      "captured": "2026-05-31T10:49:31",
+      "screenshot": null,
+      "checked": "Content-presence at 375 (no image capture). All sections present; no horizontal overflow; hamburger nav functional.",
+      "findings": []
+    }
+  }
+}

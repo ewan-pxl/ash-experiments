@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import { pagesOf } from '../pages.js'
-import { wiki, branding } from 'virtual:postclick-data'
+import { wiki, branding, qa } from 'virtual:postclick-data'
 import PtLogo from '../components/PtLogo.vue'
 // The Claude "burst" mark on its terracotta tile, inlined so it bundles with the shell.
 // Used on the cheat-sheet button and modal header so it instantly reads as a Claude thing.
@@ -12,6 +12,7 @@ const experiments = pagesOf('experiment').length
 const agency = pagesOf('agency').length
 const docs = wiki.docs.length
 const brands = branding.brands.length
+const qaRuns = (qa.projects || []).reduce((n, p) => n + p.runs.length, 0)
 const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`
 
 // Two work areas (where work happens), then two reference areas (what you pull from).
@@ -47,6 +48,14 @@ const cards = [
     icon: 'palette',
     desc: 'The asset library: logos, colours, type, fonts and imagery, per brand.',
     meta: branding.present ? plural(brands, 'brand', 'brands') : 'source not found',
+  },
+  {
+    key: 'qa',
+    title: 'QA',
+    href: '/home/qa',
+    icon: 'fact_check',
+    desc: 'Website QA runs: findings, regressions and screenshots, browsable per project and over time.',
+    meta: qa.present ? plural(qaRuns, 'run', 'runs') : 'source not found',
   },
 ]
 
@@ -401,6 +410,10 @@ function renderKey(s) {
 .launch-card.assets .launch-icon {
   background: rgba(254, 194, 0, 0.18);
   color: var(--yellow);
+}
+.launch-card.qa .launch-icon {
+  background: var(--good-soft);
+  color: var(--good);
 }
 .launch-title {
   font-family: var(--display);

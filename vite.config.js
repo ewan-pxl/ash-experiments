@@ -12,6 +12,10 @@ const pagesDir = resolve(root, 'pages')
 // markdown; content/branding holds the brand assets (logos, DTCG tokens, imagery).
 const wikiDir = resolve(root, 'content', 'wiki')
 const brandingDir = resolve(root, 'content', 'branding')
+// content/qa holds published website-QA runs (synced in from ~/.claude/QA by
+// scripts/sync-qa.mjs — Cloudflare's build box can't see that local dir, so the
+// runs are committed here). One folder per project; runs under <project>/runs/.
+const qaDir = resolve(root, 'content', 'qa')
 
 // A page's URL folder comes from its meta.json `folder` field (virtual — the
 // pages/ dir stays flat). Slugged to lowercase-dashes so the public path is clean:
@@ -282,6 +286,58 @@ function readBrandDir(brandDir) {
   }
 }
 
+// --- QA: published website-QA runs (content/qa), one entry per project. ---
+// A "dumb reader": the sync script writes meta.json (the index facts) + report.md
+// + state.json|snags.json + compressed screenshots; this just collects them. Run
+// screenshots/doc-reference are returned as { name, file } (absolute path) so the
+// load() step rewrites them into real hashed imports, exactly like brand imagery.
+function readQARun(runDir, runId) {
+  const meta = readJson(resolve(runDir, 'meta.json'))
+  if (!meta) return null
+  const reportPath = resolve(runDir, 'report.md')
+  const statePath = resolve(runDir, 'state.json')
+  const snagsPath = resolve(runDir, 'snags.json')
+  const imgList = (subdir) => {
+    const d = resolve(runDir, subdir)
+    return walkFiles(d, (n) => extname(n).toLowerCase() in IMAGE_MIME)
+      .map((full) => ({ name: relPath(d, full), file: full }))
+      .sort((a, b) => a.name.localeCompare(b.name))
+  }
+  return {
+    ...meta,
+    runId: meta.runId || runId,
+    report: existsSync(reportPath) ? readFileSync(reportPath, 'utf8') : '',
+    state: existsSync(statePath) ? readJson(statePath) : null,
+    snags: existsSync(snagsPath) ? readJson(snagsPath) : null,
+    screenshots: imgList('screenshots'),
+    docReference: imgList('doc-reference'),
+  }
+}
+
+function readQA() {
+  if (!existsSync(qaDir)) return { present: false, projects: [] }
+  const projects = []
+  for (const e of readdirSync(qaDir, { withFileTypes: true })) {
+    if (!e.isDirectory() || SKIP_DIRS.has(e.name)) continue
+    const projDir = resolve(qaDir, e.name)
+    const runsDir = resolve(projDir, 'runs')
+    if (!existsSync(runsDir)) continue
+    const baseline = readJson(resolve(projDir, 'baseline-meta.json')) || { hasBaseline: false }
+    const runs = []
+    for (const r of readdirSync(runsDir, { withFileTypes: true })) {
+      if (!r.isDirectory() || SKIP_DIRS.has(r.name)) continue
+      const run = readQARun(resolve(runsDir, r.name), r.name)
+      if (run) runs.push(run)
+    }
+    // Newest first — run ids are timestamp-prefixed, so they sort lexically.
+    runs.sort((a, b) => b.runId.localeCompare(a.runId))
+    if (runs.length) projects.push({ name: e.name, baseline, runs })
+  }
+  // Projects ordered by their most recent run.
+  projects.sort((a, b) => (b.runs[0]?.runId || '').localeCompare(a.runs[0]?.runId || ''))
+  return { present: true, projects }
+}
+
 function readBranding() {
   if (!existsSync(brandingDir)) return { present: false, brands: [] }
   const brands = []
@@ -316,6 +372,7 @@ function postclickData() {
       if (id !== RESOLVED) return
       const wiki = readWiki()
       const branding = readBranding()
+      const qa = readQA()
 
       // Replace each image's `file` (absolute path) with an `import` so Vite emits
       // it as a real hashed asset. We stash a sentinel in the JSON, then splice the
@@ -337,7 +394,15 @@ function postclickData() {
       }
       const brandingCode = JSON.stringify(branding).replace(/"(__img\d+)"/g, '$1')
 
-      return `${imports.join('\n')}\nexport const wiki = ${JSON.stringify(wiki)}\nexport const branding = ${brandingCode}\n`
+      // Same treatment for QA run imagery (screenshots + snag doc-reference shots).
+      for (const p of qa.projects || [])
+        for (const r of p.runs || []) {
+          for (const s of r.screenshots || []) if (s.file) { s.src = `${refFor(s.file)}`; delete s.file }
+          for (const d of r.docReference || []) if (d.file) { d.src = `${refFor(d.file)}`; delete d.file }
+        }
+      const qaCode = JSON.stringify(qa).replace(/"(__img\d+)"/g, '$1')
+
+      return `${imports.join('\n')}\nexport const wiki = ${JSON.stringify(wiki)}\nexport const branding = ${brandingCode}\nexport const qa = ${qaCode}\n`
     },
   }
 }
@@ -378,7 +443,7 @@ function chunkDir(info) {
   const hasSecret = ids.some(
     (id) =>
       id.includes('postclick-data') ||
-      /[\\/]views[\\/](WikiView|AssetsView)\.vue/.test(id),
+      /[\\/]views[\\/](WikiView|AssetsView|QAView)\.vue/.test(id),
   )
   return isShellEntry || hasSecret ? 'home/assets' : 'assets'
 }
@@ -396,7 +461,7 @@ function assetDir(info) {
   const srcs = info.originalFileNames || (info.originalFileName ? [info.originalFileName] : [])
   const names = info.names || (info.name ? [info.name] : [])
   const norm = (s) => s.split(sep).join('/')
-  const fromContent = srcs.some((s) => /(^|\/)content\/(branding|wiki)\//.test(norm(s)))
+  const fromContent = srcs.some((s) => /(^|\/)content\/(branding|wiki|qa)\//.test(norm(s)))
   const sharedWithDeck = srcs.some((s) => /(^|\/)(pages|projects)\//.test(norm(s)))
   const isCss = names.some((n) => n.endsWith('.css'))
   const fromShellCss =

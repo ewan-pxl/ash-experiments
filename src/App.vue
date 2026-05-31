@@ -3,6 +3,7 @@ import LauncherView from './views/LauncherView.vue'
 import IndexView from './views/IndexView.vue'
 import WikiView from './views/WikiView.vue'
 import AssetsView from './views/AssetsView.vue'
+import QAView from './views/QAView.vue'
 import NotFound from './views/NotFound.vue'
 // The Pixel Theory logo ships as an SVG sprite (an invisible <symbol id="pt-logo">).
 // Inject it once here so any <PtLogo> in any area can reference it via <use>.
@@ -14,6 +15,7 @@ import ptLogoSprite from '@projects/PXL decks/logo.svg?raw'
 //   /home/agency...       → Agency — on the business (proposals, reporting, decks)
 //   /home/wiki...         → Wiki — the knowledge base (pxl-postclick-os)
 //   /home/assets...       → Assets — the brand/asset library (branding repo)
+//   /home/qa...           → QA — website QA runs (findings + screenshots per project)
 // Everything else is a 404. In prod, _redirects serves this shell for any path;
 // in dev the /home* middleware passthrough does the same — routing is client-side.
 const path = window.location.pathname.replace(/\/+$/, '') || '/'
@@ -28,6 +30,7 @@ function pick() {
   if (path === '/home/agency' || path.startsWith('/home/agency/')) return 'agency'
   if (path === '/home/wiki' || path.startsWith('/home/wiki/')) return 'wiki'
   if (path === '/home/assets' || path.startsWith('/home/assets/')) return 'assets'
+  if (path === '/home/qa' || path.startsWith('/home/qa/')) return 'qa'
   return 'notfound'
 }
 const area = pick()
@@ -42,6 +45,7 @@ const titles = {
   agency: 'Agency',
   wiki: 'Wiki',
   assets: 'Assets',
+  qa: 'QA',
   notfound: '404',
 }
 document.title = titles[area]
@@ -54,5 +58,6 @@ document.title = titles[area]
   <IndexView v-else-if="area === 'agency'" kind="agency" />
   <WikiView v-else-if="area === 'wiki'" />
   <AssetsView v-else-if="area === 'assets'" />
+  <QAView v-else-if="area === 'qa'" />
   <NotFound v-else />
 </template>

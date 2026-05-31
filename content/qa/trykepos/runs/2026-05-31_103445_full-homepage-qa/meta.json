@@ -1,0 +1,55 @@
+{
+  "project": "trykepos",
+  "runId": "2026-05-31_103445_full-homepage-qa",
+  "date": "2026-05-31",
+  "created": "2026-05-31T10:34:45",
+  "purpose": "full homepage QA",
+  "type": "audit",
+  "scope": [
+    "functional",
+    "responsive",
+    "console_network",
+    "visual"
+  ],
+  "urls": [
+    "https://trykepos.com/"
+  ],
+  "locale": "en",
+  "currency": "USD",
+  "environment": "Could not confirm against this repo (this is a scratchpad repo, not the kēpos site) — treated as **black-box**. Shopify store (`7f421a-3.myshopify.com`), `en` / `USD`.",
+  "servedFrom": "Public site (no preview/proxy redirect).",
+  "screenshots": [],
+  "docReference": [],
+  "shotRemap": {},
+  "hasState": true,
+  "hasSnags": false,
+  "hasReport": true,
+  "incomplete": false,
+  "counts": {
+    "high": 0,
+    "medium": 1,
+    "low": 1,
+    "total": 2,
+    "regressions": 0,
+    "new": 0,
+    "fixed": 0,
+    "unchanged": 2,
+    "suppressed": 4
+  },
+  "classifications": [
+    {
+      "key": "console_network::https://trykepos.com/::desktop-1440",
+      "signature": "console::splide-maximum-call-stack-recursion",
+      "class": "unchanged"
+    },
+    {
+      "key": "functional::https://trykepos.com/::mobile-375",
+      "signature": "functional::mobile-close-button-zero-size",
+      "class": "unchanged"
+    }
+  ],
+  "fixed": [],
+  "baseline": {
+    "compared": true
+  }
+}
