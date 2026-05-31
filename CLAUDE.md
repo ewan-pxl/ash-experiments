@@ -399,6 +399,24 @@ file.
   ```
 - Only add to `package.json` if you genuinely must, and **never remove** another page's dependency.
 
+### Font Awesome (Pro kit)
+
+Pixel Theory's **Font Awesome Pro kit** is available — `https://kit.fontawesome.com/0cc0069945.js`.
+Use it for any icons; no install. Just drop an `<i>` with the icon's classes, e.g.
+`<i class="fa-solid fa-rocket"></i>` (all Pro styles work: `fa-regular`, `fa-light`, `fa-thin`,
+`fa-duotone`, `fa-sharp`, brands `fa-brands`, etc.). The SVG+JS framework watches the DOM, so
+Vue-rendered icons get swapped in automatically.
+
+- **The `/home` shell already loads it** (in the root `index.html`), so every OS area (Launcher,
+  Experiments, Agency, Wiki, Assets) can use icons with no extra setup.
+- **For an isolated page that wants icons,** add the kit `<script>` to *that page's* `index.html`
+  `<head>` (pages are self-contained, so they don't inherit the shell's copy):
+  ```html
+  <link rel="preconnect" href="https://kit.fontawesome.com" crossorigin />
+  <link rel="preconnect" href="https://ka-f.fontawesome.com" crossorigin />
+  <script src="https://kit.fontawesome.com/0cc0069945.js" crossorigin="anonymous"></script>
+  ```
+
 ---
 
 ## Preview & ship
