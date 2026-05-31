@@ -69,11 +69,12 @@ const cheatTabs = [
   {
     key: 'keys',
     label: 'Keyboard',
-    intro: 'Shortcuts you press inside a session. The ones you reach for most are at the top.',
+    intro: 'Shortcuts you press inside a session. The ones you reach for most are at the top. On Mac, "Ctrl" here means the Control key (⌃), not Command (⌘) — Claude Code is a terminal app, so it uses Control just like Windows does. The only Command shortcut is ⌘K.',
     rows: [
       ['Esc', 'Stop Claude mid-task without quitting.'],
       ['Esc Esc', 'Rewind / edit one of your earlier messages and go back to that point.'],
       ['Ctrl + C', 'Clear the text you have typed. Press twice to quit Claude Code.'],
+      ['Cmd + K', 'Mac only: clear the screen. Press twice quickly to run /clear.'],
       ['Ctrl + D', 'Quit Claude Code (exit the session).'],
       ['Ctrl + L', 'Clear the screen (tidies the view; does not erase the conversation).'],
       ['Up / Down', 'Scroll back through your previous messages.'],
